@@ -25,7 +25,7 @@ class MainWindow(QMainWindow):
         # Layout
         pageLayout = QVBoxLayout()
         pageLayout.setAlignment(Qt.AlignTop)
-        pageLayout.setSpacing(15)
+        pageLayout.setSpacing(35)
 
         topRow = QHBoxLayout()
         topRow.setAlignment(Qt.AlignLeft)
@@ -63,14 +63,13 @@ class MainWindow(QMainWindow):
         # #self.button.clicked.connect(self.increase_count)
 
         # No row
-        self.heading = QLabel("HomePage")
-        self.heading.setAlignment(Qt.AlignLeft)
-        self.heading.setStyleSheet("""
+        self.headingLabel = QLabel("HomePage")
+        self.headingLabel.setAlignment(Qt.AlignLeft)
+        self.headingLabel.setStyleSheet("""
             font-size: 36px;
             font-family: DejaVu Sans Mono;
             padding-top: 15px;
-            padding-left: 10px;
-            """)
+            padding-left: 10px;""")
 
         # Top row
         summaryCard = QFrame() # Summary card
@@ -80,7 +79,7 @@ class MainWindow(QMainWindow):
             font-family: Noto Sans Mono Thin;
             font-weight: bold;
             padding: 10px;
-            border-radius: 25px;
+            border-radius: 20px;
             margin-left: 20px;""")
 
         self.summaryLabel = QLabel('Summary')
@@ -102,9 +101,7 @@ class MainWindow(QMainWindow):
 Expense: {totalExpense:,} AED'''
         self.budgetLabel = QLabel(self.budget)
         self.budgetLabel.setAlignment(Qt.AlignTop)
-        self.budgetLabel.setStyleSheet('''
-        font-size: 18px;
-        ''')
+        self.budgetLabel.setStyleSheet('font-size: 18px;')
 
         summaryLayout = QVBoxLayout(summaryCard)
         summaryLayout.addWidget(self.summaryLabel)
@@ -118,12 +115,12 @@ Expense: {totalExpense:,} AED'''
         greetingCard.setFixedWidth(1050)
         greetingCard.setFixedHeight(100)
         greetingCard.setStyleSheet('''
-        font-family: Caladea;
-        font-weight: bold;
-        background-color: #222222;
-        color: White;
-        font-size: 26px;
-        border-radius: 10px;''')
+            font-family: Caladea;
+            font-weight: bold;
+            background-color: #222222;
+            color: White;
+            font-size: 26px;
+            border-radius: 15px;''')
 
         with open('data/user.txt', 'r') as file:
             self.username = file.read()
@@ -131,11 +128,12 @@ Expense: {totalExpense:,} AED'''
         greeting = greetingText()
         if greeting[0] == 'G' or greeting[0] == 'W':
             self.greetingLabel = QLabel(f'{greeting} {self.username.title()}')
+            self.greetingLabel.setStyleSheet('margin-top:25%;')
 
         else:
             self.greetingLabel = QLabel(greeting)
+
         self.greetingLabel.setAlignment(Qt.AlignCenter)
-        self.greetingLabel.setStyleSheet('margin-top:25%;')
 
         greetingLayout = QVBoxLayout(greetingCard)
         greetingLayout.addWidget(self.greetingLabel)
@@ -143,10 +141,28 @@ Expense: {totalExpense:,} AED'''
         topRow.addWidget(greetingCard)
 
         # Bottom row
-        
+        historyCard = QFrame()
+        historyCard.setFixedWidth(900)
+        historyCard.setStyleSheet('''
+            font-size: 22px;
+            color: White;
+            background-color: #222222;
+            border-radius: 10px;
+            margin-left: 20px;
+            font-family: Noto Sans Mono Thin;
+            font-weight: bold;''')
 
-        pageLayout.addWidget(self.heading)
+        self.historyLabel = QLabel('Transaction History')
+        self.historyLabel.setStyleSheet('padding-top: 10px;')
+
+        historyLayout = QVBoxLayout(historyCard)
+        historyLayout.addWidget(self.historyLabel)
+
+        bottomRow.addWidget(historyCard)
+
+        pageLayout.addWidget(self.headingLabel)
         pageLayout.addLayout(topRow)
+        pageLayout.addLayout(bottomRow)
 
         pageLayout.addStretch() # <-- Should be last! To make everything in layout align to the left
 
