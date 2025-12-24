@@ -150,13 +150,83 @@ Expense: {totalExpense:,} AED'''
             border-radius: 10px;
             margin-left: 20px;
             font-family: Noto Sans Mono Thin;
-            font-weight: bold;''')
+            font-weight: bold;
+            padding-bottom: 10px;
+            padding-right: 10px;''')
 
         self.historyLabel = QLabel('Transaction History')
         self.historyLabel.setStyleSheet('padding-top: 10px;')
 
+        self.transactionHistory = db.history() # Transaction history from DB
+
+        self.transactionHistory0 = f'''{self.transactionHistory[0][0]:<30}             {self.transactionHistory[0][1]:>15}
+{self.transactionHistory[0][2]}'''
+        self.transactionLabel0 = QLabel(f'{self.transactionHistory0}')
+        if self.transactionHistory[0][3] == 'expense':
+            transactionColorCode = '#c71413'
+        elif self.transactionHistory[0][3] == 'income':
+            transactionColorCode = '#11b343'
+        self.transactionLabel0.setStyleSheet(f'''
+            border: 3px solid {transactionColorCode};
+            padding: 10px;
+            margin-top: 10px;''')
+
+
+        self.transactionHistory1 = f'''{self.transactionHistory[1][0]:<30}             {self.transactionHistory[1][1]:>15}
+{self.transactionHistory[1][2]}'''
+        self.transactionLabel1 = QLabel(f'{self.transactionHistory1}')
+        if self.transactionHistory[1][3] == 'expense':
+            transactionColorCode = '#c71413'
+        elif self.transactionHistory[1][3] == 'income':
+            transactionColorCode = '#11b343'
+        self.transactionLabel1.setStyleSheet(f'''
+            border: 3px solid {transactionColorCode};
+            padding: 10px;
+            margin-top: 10px;''')
+
+        self.transactionHistory2 = f'''{self.transactionHistory[2][0]:<30}             {self.transactionHistory[2][1]:>15}
+{self.transactionHistory[2][2]}'''
+        self.transactionLabel2 = QLabel(f'{self.transactionHistory2}')
+        if self.transactionHistory[2][3] == 'expense':
+            transactionColorCode = '#c71413'
+        elif self.transactionHistory[2][3] == 'income':
+            transactionColorCode = '#11b343'
+        self.transactionLabel2.setStyleSheet(f'''
+            border: 3px solid {transactionColorCode};
+            padding: 10px;
+            margin-top: 10px;''')
+
+        self.transactionHistory3 = f'''{self.transactionHistory[3][0]:<30}             {self.transactionHistory[3][1]:>15}
+{self.transactionHistory[3][2]}'''
+        self.transactionLabel3 = QLabel(f'{self.transactionHistory3}')
+        if self.transactionHistory[3][3] == 'expense':
+            transactionColorCode = '#c71413'
+        elif self.transactionHistory[3][3] == 'income':
+            transactionColorCode = '#11b343'
+        self.transactionLabel3.setStyleSheet(f'''
+            border: 3px solid {transactionColorCode};
+            padding: 10px;
+            margin-top: 10px;''')
+
+        self.transactionHistory4 = f'''{self.transactionHistory[4][0]:<30}             {self.transactionHistory[4][1]:>15}
+{self.transactionHistory[4][2]}'''
+        self.transactionLabel4 = QLabel(f'{self.transactionHistory4}')
+        if self.transactionHistory[4][3] == 'expense':
+            transactionColorCode = '#c71413'
+        elif self.transactionHistory[4][3] == 'income':
+            transactionColorCode = '#11b343'
+        self.transactionLabel4.setStyleSheet(f'''
+            border: 3px solid {transactionColorCode};
+            padding: 10px;
+            margin-top: 10px;''')
+
         historyLayout = QVBoxLayout(historyCard)
         historyLayout.addWidget(self.historyLabel)
+        historyLayout.addWidget(self.transactionLabel0)
+        historyLayout.addWidget(self.transactionLabel1)
+        historyLayout.addWidget(self.transactionLabel2)
+        historyLayout.addWidget(self.transactionLabel3)
+        historyLayout.addWidget(self.transactionLabel4)
 
         bottomRow.addWidget(historyCard)
 
