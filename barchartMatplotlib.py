@@ -39,11 +39,11 @@ def plot_bar_chart(figure, canvas):
         'Dec': db.incomeExpense('12', 'E')
     }
 
-    plt = figure.add_subplot(111)  # <-- Don't use during update
+    plt = figure.add_subplot()  # <-- Don't use during update
     plt.clear()
 
-    plt.bar(income.keys(), income.values(), color = '#53a84e')
-    plt.bar(expense.keys(), expense.values(), color = '#c71413')
+    plt.bar(income.keys(), income.values(), color = '#3e9c35', width = 0.8)
+    plt.bar(expense.keys(), expense.values(), color = '#c71413', width = 0.8)
     plt.tick_params(axis='x', colors='white')
     plt.tick_params(axis='y', colors='white')
 

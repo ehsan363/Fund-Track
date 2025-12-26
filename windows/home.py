@@ -74,7 +74,7 @@ class MainWindow(QMainWindow):
 
         # Top row
         summaryCard = QFrame() # Summary card
-        summaryCard.setFixedWidth(350)
+        summaryCard.setFixedWidth(450)
         summaryCard.setStyleSheet("""
             background-color: #222222;
             font-family: Noto Sans Mono Thin;
@@ -99,7 +99,9 @@ class MainWindow(QMainWindow):
         totalExpense = db.Expense()
 
         self.budget = f'''Budget: {int(self.budgetRead):,} AED
-Expense: {totalExpense:,} AED'''
+Expense: {totalExpense:,} AED
+─────────────────────────
+Balance: {int(self.budgetRead)-totalExpense:,.2f} AED'''
         self.budgetLabel = QLabel(self.budget)
         self.budgetLabel.setAlignment(Qt.AlignTop)
         self.budgetLabel.setStyleSheet('font-size: 18px;')
@@ -231,14 +233,19 @@ Expense: {totalExpense:,} AED'''
 
         # Bargraph with Matplotlib
         barCard = QFrame()
-        barCard.setFixedWidth(600)
+        barCard.setFixedWidth(700)
+        barCard.setStyleSheet('''
+            border-radius: 20px;''')
 
 
         figure, canvas = initiation()
         plot_bar_chart(figure, canvas)
 
+        barLayout = QVBoxLayout(barCard)
+        barLayout.addWidget(canvas)
+
         bottomRow.addWidget(historyCard)
-        bottomRow.addWidget(canvas)
+        bottomRow.addWidget(barCard)
 
         pageLayout.addWidget(self.headingLabel)
         pageLayout.addLayout(topRow)
