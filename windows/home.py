@@ -242,7 +242,7 @@ Balance: {int(self.budgetRead)-totalExpense:,.2f} AED'''
         plot_bar_chart(self.figure, self.canvas)
 
         barLayout = QVBoxLayout(barCard)
-        barLayout.addWidget(canvas)
+        barLayout.addWidget(self.canvas)
 
         bottomRow.addWidget(historyCard)
         bottomRow.addWidget(barCard)
