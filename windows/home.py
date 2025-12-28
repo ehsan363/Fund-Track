@@ -1,10 +1,11 @@
 # Importing modules from PySide6 library
-from PySide6.QtWidgets import QMainWindow, QWidget, QPushButton, QLabel, QVBoxLayout, QHBoxLayout, QToolBar, QFrame
+from PySide6.QtWidgets import QApplication, QMainWindow, QWidget, QPushButton, QLabel, QVBoxLayout, QHBoxLayout, QToolBar, QFrame
 from PySide6.QtGui import QAction, QFont, QIcon
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt, QSize
 from data.database import DBmanager
 from dateAndTime import greetingText
 from barchartMatplotlib import initiation, plot_bar_chart
+import sys
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -41,23 +42,25 @@ class MainWindow(QMainWindow):
         # Toolbar options
         toolbar = QToolBar("Main Toolbar", self)
         self.addToolBar(toolbar)
-        toolbar.setStyleSheet('Background-color: #e78c4d; font-size: 20px;')
-        action_add = QAction("Add Expense", self)
+        toolbar.setMovable(False)
+        toolbar.setStyleSheet('Background-color: #ed7521; font-size: 20px;')
+        toolbar.setToolButtonStyle(Qt.ToolButtonTextUnderIcon)
+        action_add = QAction(QIcon('img/more_icon.png'),"Add Expense", self)
         toolbar.addAction(action_add)
 
-        action_add = QAction("Edit Expense", self)
+        action_add = QAction(QIcon('img/edit_icon(1).png'),"Edit Expense", self)
         toolbar.addAction(action_add)
 
-        action_add = QAction("Edit Income", self)
+        action_add = QAction(QIcon('img/edit_icon.png'),"Edit Income", self)
         toolbar.addAction(action_add)
 
-        action_add = QAction("History", self)
+        action_add = QAction(QIcon('img/history_icon.png'),"History", self)
         toolbar.addAction(action_add)
 
-        action_add = QAction("User", self)
+        action_add = QAction(QIcon('img/user_icon.png'),"User", self)
         toolbar.addAction(action_add)
 
-        action_add = QAction("Settings", self)
+        action_add = QAction(QIcon('img/settings_icon.png'),"Settings", self)
         toolbar.addAction(action_add)
 
         # Connect button click to function
@@ -162,7 +165,7 @@ Balance: {int(self.budgetRead)-totalExpense:,.2f} AED'''
 
         self.transactionHistory = db.history() # Transaction history from DB
 
-        self.transactionHistory0 = f'''{self.transactionHistory[0][0]:<30}             {self.transactionHistory[0][1]:>15}
+        self.transactionHistory0 = f'''{self.transactionHistory[0][0]:<30}             {self.transactionHistory[0][1]+' AED':>15}
 {self.transactionHistory[0][2]}'''
         self.transactionLabel0 = QLabel(f'{self.transactionHistory0}')
         if self.transactionHistory[0][3] == 'expense':
@@ -175,7 +178,7 @@ Balance: {int(self.budgetRead)-totalExpense:,.2f} AED'''
             margin-top: 10px;''')
 
 
-        self.transactionHistory1 = f'''{self.transactionHistory[1][0]:<30}             {self.transactionHistory[1][1]:>15}
+        self.transactionHistory1 = f'''{self.transactionHistory[1][0]:<30}             {self.transactionHistory[1][1]+' AED':>15}
 {self.transactionHistory[1][2]}'''
         self.transactionLabel1 = QLabel(f'{self.transactionHistory1}')
         if self.transactionHistory[1][3] == 'expense':
@@ -187,7 +190,7 @@ Balance: {int(self.budgetRead)-totalExpense:,.2f} AED'''
             padding: 10px;
             margin-top: 10px;''')
 
-        self.transactionHistory2 = f'''{self.transactionHistory[2][0]:<30}             {self.transactionHistory[2][1]:>15}
+        self.transactionHistory2 = f'''{self.transactionHistory[2][0]:<30}             {self.transactionHistory[2][1]+' AED':>15}
 {self.transactionHistory[2][2]}'''
         self.transactionLabel2 = QLabel(f'{self.transactionHistory2}')
         if self.transactionHistory[2][3] == 'expense':
@@ -199,7 +202,7 @@ Balance: {int(self.budgetRead)-totalExpense:,.2f} AED'''
             padding: 10px;
             margin-top: 10px;''')
 
-        self.transactionHistory3 = f'''{self.transactionHistory[3][0]:<30}             {self.transactionHistory[3][1]:>15}
+        self.transactionHistory3 = f'''{self.transactionHistory[3][0]:<30}             {self.transactionHistory[3][1]+' AED':>15}
 {self.transactionHistory[3][2]}'''
         self.transactionLabel3 = QLabel(f'{self.transactionHistory3}')
         if self.transactionHistory[3][3] == 'expense':
@@ -211,7 +214,7 @@ Balance: {int(self.budgetRead)-totalExpense:,.2f} AED'''
             padding: 10px;
             margin-top: 10px;''')
 
-        self.transactionHistory4 = f'''{self.transactionHistory[4][0]:<30}             {self.transactionHistory[4][1]:>15}
+        self.transactionHistory4 = f'''{self.transactionHistory[4][0]:<30}             {self.transactionHistory[4][1]+' AED':>15}
 {self.transactionHistory[4][2]}'''
         self.transactionLabel4 = QLabel(f'{self.transactionHistory4}')
         if self.transactionHistory[4][3] == 'expense':
@@ -255,5 +258,6 @@ Balance: {int(self.budgetRead)-totalExpense:,.2f} AED'''
 
         centralWidget = QWidget()
         centralWidget.setLayout(pageLayout)
-        centralWidget.setStyleSheet('background-color: #141414; color: #e78c4d;')
+        centralWidget.setStyleSheet('background-color: #141414; color: #ed7521;')
         self.setCentralWidget(centralWidget) # <-- Stuff into Central Widget
+

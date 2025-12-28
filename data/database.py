@@ -38,7 +38,7 @@ class DBmanager:
         rows = []
         data = []
         for i in rawRows:
-            rows.append([dict(i)['category'],dict(i)['amount'],dict(i)['date'],dict(i)['type']])
+            rows.append([dict(i)['category'],f"{dict(i)['amount']:.2f}",dict(i)['date'],dict(i)['type']])
 
         return rows
 
