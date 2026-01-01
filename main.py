@@ -1,5 +1,4 @@
-from PySide6.QtWidgets import QApplication
-import sys
+from PySide6.QtWidgets import QApplication, QFrame
 from windows.home import MainWindow # Homepage window imported
 from windows.addExpense import addExpenseWindow
 from windows.editExpense import editExpenseWindow
@@ -7,10 +6,12 @@ from windows.editIncome import editIncomeWindow
 from windows.history import historyWindow
 from windows.user import userWindow
 from windows.settings import settingsWindow
+import sys
 
 class AppController:
     def __init__(self):
         self.window = MainWindow() # Main window
+        self.window.gohomepage_Signal.connect(self.refresh)
         self.window.addExpense_Signal.connect(self.open_addexpense)
         self.window.editExpense_Signal.connect(self.open_editexpense)
         self.window.editIncome_Signal.connect(self.open_editincome)
@@ -20,6 +21,9 @@ class AppController:
         self.window.show()
 
         # self.app.exec()
+    def refresh(self):
+        self.window.refresh()
+
     def open_addexpense(self):
         self.sub_window = addExpenseWindow()
         self.sub_window.show()
@@ -53,7 +57,10 @@ class AppController:
 
 
 
-if __name__ == "__main__":
+def start():
+    global app
     app = QApplication(sys.argv)
     controller = AppController()
     sys.exit(app.exec())
+
+start()

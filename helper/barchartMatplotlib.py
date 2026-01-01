@@ -52,8 +52,9 @@ def plot_bar_chart(figure, canvas):
     figure.patch.set_facecolor("#222222") # Bg color changed (barchart surround area)
     plt.set_facecolor("#222222") # (barchart area)
     canvas.draw()
+    return plt
 
-def update_bar_chart():
+def update_bar_chart(plt, figure, canvas):
     plt.clear()
     db = DBmanager()
     income = {

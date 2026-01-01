@@ -1,13 +1,13 @@
 # Importing modules from PySide6 library
-from PySide6.QtWidgets import QApplication, QMainWindow, QWidget, QPushButton, QLabel, QVBoxLayout, QHBoxLayout, QToolBar, QFrame
+from PySide6.QtWidgets import QMainWindow, QWidget, QLabel, QVBoxLayout, QHBoxLayout, QToolBar, QFrame
 from PySide6.QtGui import QAction, QFont, QIcon
-from PySide6.QtCore import Qt, QSize, Signal
+from PySide6.QtCore import Qt, Signal
 from data.database import DBmanager
-from dateAndTime import greetingText
-from barchartMatplotlib import initiation, plot_bar_chart
-import sys
+from helper.barchartMatplotlib import initiation, plot_bar_chart
+from helper.HPrefresher import summaryCardRefresher, transactionHistoryRefresher, greetingRefresh, barchartRefresher
 
 class MainWindow(QMainWindow):
+    gohomepage_Signal = Signal()
     addExpense_Signal = Signal()
     editExpense_Signal = Signal()
     editIncome_Signal = Signal()
@@ -53,6 +53,10 @@ class MainWindow(QMainWindow):
         toolbar.setStyleSheet('Background-color: #ed7521; font-size: 20px;')
         toolbar.setToolButtonStyle(Qt.ToolButtonTextUnderIcon)
 
+        action_add = QAction(QIcon('img/homepage_icon.png'),"Homepage", self)
+        toolbar.addAction(action_add)
+        action_add.triggered.connect(self.gohomepage_Signal.emit)
+
         action_add = QAction(QIcon('img/more_icon.png'),"Add Expense", self)
         toolbar.addAction(action_add)
         action_add.triggered.connect(self.addExpense_Signal.emit)
@@ -77,8 +81,6 @@ class MainWindow(QMainWindow):
         toolbar.addAction(action_add)
         action_add.triggered.connect(self.settings_Signal.emit)
 
-        # Connect button click to function
-        # #self.button.clicked.connect(self.increase_count)
 
         # No row
         self.headingLabel = QLabel("HomePage")
@@ -109,17 +111,7 @@ class MainWindow(QMainWindow):
             padding-top: 5px;
             margin-top: 20px;""")
 
-        with open('data/budget.txt', 'r') as file:
-            self.budgetRead = file.readline()
-
-        db = DBmanager()  # Expense from Database to summary card
-        totalExpense = db.Expense()
-
-        self.budget = f'''Budget: {int(self.budgetRead):,} AED
-Expense: {totalExpense:,} AED
-─────────────────────────
-Balance: {int(self.budgetRead)-totalExpense:,.2f} AED'''
-        self.budgetLabel = QLabel(self.budget)
+        self.budgetLabel = QLabel()
         self.budgetLabel.setAlignment(Qt.AlignTop)
         self.budgetLabel.setStyleSheet('font-size: 18px;')
 
@@ -142,18 +134,9 @@ Balance: {int(self.budgetRead)-totalExpense:,.2f} AED'''
             font-size: 26px;
             border-radius: 15px;''')
 
-        with open('data/user.txt', 'r') as file:
-            self.username = file.read()
-
-        greeting = greetingText()
-        if greeting[0] == 'G' or greeting[0] == 'W':
-            self.greetingLabel = QLabel(f'{greeting} {self.username.title()}')
-            self.greetingLabel.setStyleSheet('margin-top:25%;')
-
-        else:
-            self.greetingLabel = QLabel(greeting)
-
+        self.greetingLabel = QLabel()
         self.greetingLabel.setAlignment(Qt.AlignCenter)
+        self.greetingLabel.setStyleSheet('margin-top:25%;')
 
         greetingLayout = QVBoxLayout(greetingCard)
         greetingLayout.addWidget(self.greetingLabel)
@@ -177,76 +160,8 @@ Balance: {int(self.budgetRead)-totalExpense:,.2f} AED'''
         self.historyLabel = QLabel('Transaction History')
         self.historyLabel.setStyleSheet('padding-top: 10px;')
 
-        self.transactionHistory = db.history() # Transaction history from DB
-
-        self.transactionHistory0 = f'''{self.transactionHistory[0][0]:<30}             {self.transactionHistory[0][1]+' AED':>15}
-{self.transactionHistory[0][2]}'''
-        self.transactionLabel0 = QLabel(f'{self.transactionHistory0}')
-        if self.transactionHistory[0][3] == 'expense':
-            transactionColorCode = '#c71413'
-        elif self.transactionHistory[0][3] == 'income':
-            transactionColorCode = '#11b343'
-        self.transactionLabel0.setStyleSheet(f'''
-            border: 3px solid {transactionColorCode};
-            padding: 10px;
-            margin-top: 10px;''')
-
-
-        self.transactionHistory1 = f'''{self.transactionHistory[1][0]:<30}             {self.transactionHistory[1][1]+' AED':>15}
-{self.transactionHistory[1][2]}'''
-        self.transactionLabel1 = QLabel(f'{self.transactionHistory1}')
-        if self.transactionHistory[1][3] == 'expense':
-            transactionColorCode = '#c71413'
-        elif self.transactionHistory[1][3] == 'income':
-            transactionColorCode = '#11b343'
-        self.transactionLabel1.setStyleSheet(f'''
-            border: 3px solid {transactionColorCode};
-            padding: 10px;
-            margin-top: 10px;''')
-
-        self.transactionHistory2 = f'''{self.transactionHistory[2][0]:<30}             {self.transactionHistory[2][1]+' AED':>15}
-{self.transactionHistory[2][2]}'''
-        self.transactionLabel2 = QLabel(f'{self.transactionHistory2}')
-        if self.transactionHistory[2][3] == 'expense':
-            transactionColorCode = '#c71413'
-        elif self.transactionHistory[2][3] == 'income':
-            transactionColorCode = '#11b343'
-        self.transactionLabel2.setStyleSheet(f'''
-            border: 3px solid {transactionColorCode};
-            padding: 10px;
-            margin-top: 10px;''')
-
-        self.transactionHistory3 = f'''{self.transactionHistory[3][0]:<30}             {self.transactionHistory[3][1]+' AED':>15}
-{self.transactionHistory[3][2]}'''
-        self.transactionLabel3 = QLabel(f'{self.transactionHistory3}')
-        if self.transactionHistory[3][3] == 'expense':
-            transactionColorCode = '#c71413'
-        elif self.transactionHistory[3][3] == 'income':
-            transactionColorCode = '#11b343'
-        self.transactionLabel3.setStyleSheet(f'''
-            border: 3px solid {transactionColorCode};
-            padding: 10px;
-            margin-top: 10px;''')
-
-        self.transactionHistory4 = f'''{self.transactionHistory[4][0]:<30}             {self.transactionHistory[4][1]+' AED':>15}
-{self.transactionHistory[4][2]}'''
-        self.transactionLabel4 = QLabel(f'{self.transactionHistory4}')
-        if self.transactionHistory[4][3] == 'expense':
-            transactionColorCode = '#c71413'
-        elif self.transactionHistory[4][3] == 'income':
-            transactionColorCode = '#11b343'
-        self.transactionLabel4.setStyleSheet(f'''
-            border: 3px solid {transactionColorCode};
-            padding: 10px;
-            margin-top: 10px;''')
-
-        historyLayout = QVBoxLayout(historyCard)
-        historyLayout.addWidget(self.historyLabel)
-        historyLayout.addWidget(self.transactionLabel0)
-        historyLayout.addWidget(self.transactionLabel1)
-        historyLayout.addWidget(self.transactionLabel2)
-        historyLayout.addWidget(self.transactionLabel3)
-        historyLayout.addWidget(self.transactionLabel4)
+        self.historyLayout = QVBoxLayout(historyCard)
+        self.historyLayout.addWidget(self.historyLabel)
 
         # Bargraph with Matplotlib
         barCard = QFrame()
@@ -256,7 +171,7 @@ Balance: {int(self.budgetRead)-totalExpense:,.2f} AED'''
 
 
         self.figure, self.canvas = initiation()
-        plot_bar_chart(self.figure, self.canvas)
+        self.plt = plot_bar_chart(self.figure, self.canvas)
 
         barLayout = QVBoxLayout(barCard)
         barLayout.addWidget(self.canvas)
@@ -275,3 +190,10 @@ Balance: {int(self.budgetRead)-totalExpense:,.2f} AED'''
         centralWidget.setStyleSheet('background-color: #141414; color: #ed7521;')
         self.setCentralWidget(centralWidget) # <-- Stuff into Central Widget
 
+        self.refresh()
+
+    def refresh(self):
+        summaryCardRefresher(self.budgetLabel)
+        transactionHistoryRefresher(self.historyLayout)
+        greetingRefresh(self.greetingLabel)
+        barchartRefresher(self.plt, self.figure, self.canvas)

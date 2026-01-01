@@ -1,7 +1,7 @@
 # Importing libraries
 import sqlite3
 from pathlib import Path
-from dateAndTime import tdy
+from helper.dateAndTime import tdy
 
 # Database path
 BASE_DIR = Path(__file__).resolve().parent
@@ -14,9 +14,11 @@ class DBmanager:
 
     def Expense(self):
         today = tdy()
-        month = int(today.strftime('%m'))
-        year = int(today.strftime('%Y'))
+        month = today.strftime('%m')
+        year = today.strftime('%Y')
 
+        print(year)
+        print(month)
         cursor = self.conn.execute(f'''
             SELECT SUM(amount) AS total_expense
             FROM transactions
@@ -24,7 +26,10 @@ class DBmanager:
             AND strftime('%Y', date) = '{year}'
             AND strftime('%m', date) = '{month}';''')
         rows = cursor.fetchall()
-        totalExpense = float(f"{dict(rows[0])['total_expense']:.2f}")
+        if dict(rows[0])['total_expense'] == None:
+            totalExpense = 0.00
+        else:
+            totalExpense = float(f"{dict(rows[0])['total_expense']:.2f}")
         return totalExpense
 
     # Function for fetching transaction history
@@ -33,7 +38,7 @@ class DBmanager:
             SELECT category, amount, date, type
             FROM transactions
             ORDER BY date DESC
-            LIMIT 5;''')
+            LIMIT 10;''')
         rawRows = cursor.fetchall()
         rows = []
         data = []
@@ -54,7 +59,10 @@ class DBmanager:
                         AND strftime('%Y', date) = '{year}'
                         AND strftime('%m', date) = '{month}';''')
             rows = cursor.fetchall()
-            totalIncome = float(f"{dict(rows[0])['total_income']}")
+            if dict(rows[0])['total_income'] == None:
+                totalIncome = 0.00
+            else:
+                totalIncome = float(f"{dict(rows[0])['total_income']}")
             return int(totalIncome)
 
         elif tType == 'E':
@@ -65,7 +73,10 @@ class DBmanager:
                         AND strftime('%Y', date) = '{year}'
                         AND strftime('%m', date) = '{month}';''')
             rows = cursor.fetchall()
-            totalExpense = float(f"{dict(rows[0])['total_expense']}")
+            if dict(rows[0])['total_expense'] == None:
+                totalExpense = 0.00
+            else:
+                totalExpense = float(f"{dict(rows[0])['total_expense']}")
             return int(totalExpense)
 
     # Function to close SQLite
