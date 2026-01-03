@@ -8,7 +8,7 @@ from helper.HPrefresher import summaryCardRefresher, transactionHistoryRefresher
 
 class MainWindow(QMainWindow):
     refresh_Signal = Signal()
-    addExpense_Signal = Signal()
+    addTransaction_Signal = Signal()
     editExpense_Signal = Signal()
     editIncome_Signal = Signal()
     history_Signal = Signal()
@@ -64,9 +64,9 @@ class MainWindow(QMainWindow):
         action_add.triggered.connect(self.refresh_Signal.emit)
         action_add.setShortcut(QKeySequence('Ctrl+R'))
 
-        action_add = QAction(QIcon('img/more_icon.png'),"Add Expense", self)
+        action_add = QAction(QIcon('img/more_icon.png'),"Add Transaction", self)
         toolbar.addAction(action_add)
-        action_add.triggered.connect(self.addExpense_Signal.emit)
+        action_add.triggered.connect(self.addTransaction_Signal.emit)
         action_add.setShortcut(QKeySequence('Alt+1'))
 
         action_add = QAction(QIcon('img/edit_icon(1).png'),"Edit Expense", self)

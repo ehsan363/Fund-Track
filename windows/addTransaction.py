@@ -4,7 +4,7 @@ from PySide6.QtCore import Qt, Signal, QDate
 from helper.dateAndTime import todayDate, dateFormat
 from data.database import DBmanager
 
-class addExpenseWindow(QMainWindow):
+class addTransactionWindow(QMainWindow):
     goHome_Signal = Signal()
 
     def __init__(self):
@@ -47,7 +47,7 @@ class addExpenseWindow(QMainWindow):
 
         # UI elements
         # Heading
-        self.headingLabel = QLabel("""Add Expense
+        self.headingLabel = QLabel("""Add Transaction
 ──────────────────────────────────────────────────────────────────────────────────────────""")
         self.headingLabel.setAlignment(Qt.AlignLeft)
         self.headingLabel.setStyleSheet("""
@@ -376,7 +376,7 @@ class addExpenseWindow(QMainWindow):
         account = self.accountEntry.currentText()
         amount = amount.rstrip(' AED')
 
-        db.addExpenseToDB(float(amount), IorE.lower(), category, new_date, description, account)
+        db.addTransactionToDB(float(amount), IorE.lower(), category, new_date, description, account)
         if self.resetCh.isChecked():
             pass
         else:

@@ -1,6 +1,6 @@
 from PySide6.QtWidgets import QApplication, QFrame
 from windows.home import MainWindow # Homepage window imported
-from windows.addExpense import addExpenseWindow
+from windows.addTransaction import addTransactionWindow
 from windows.editExpense import editExpenseWindow
 from windows.editIncome import editIncomeWindow
 from windows.history import historyWindow
@@ -14,7 +14,7 @@ class AppController:
 
         # Taskbar Buttons
         self.window.refresh_Signal.connect(self.refresh)
-        self.window.addExpense_Signal.connect(self.open_addexpense)
+        self.window.addTransaction_Signal.connect(self.open_addtransaction)
         self.window.editExpense_Signal.connect(self.open_editexpense)
         self.window.editIncome_Signal.connect(self.open_editincome)
         self.window.history_Signal.connect(self.open_history)
@@ -32,8 +32,8 @@ class AppController:
         self.window.show()
         self.window.refresh()
 
-    def open_addexpense(self):
-        self.sub_window = addExpenseWindow()
+    def open_addtransaction(self):
+        self.sub_window = addTransactionWindow()
         self.sub_window.goHome_Signal.connect(self.go_home)
         self.sub_window.show()
         self.window.hide()

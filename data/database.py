@@ -85,7 +85,7 @@ class DBmanager:
             categorieList.append(row['name'])
         return categorieList
 
-    def addExpenseToDB(self, amount, IorE, category, date, description, account):
+    def addTransactionToDB(self, amount, IorE, category, date, description, account):
         self.cursor = self.conn.cursor()
         self.cursor.execute('INSERT INTO TRANSACTIONS (amount, type, category, date, description, account) VALUES (?,?,?,?,?,?)', (amount, IorE, category, date, description, account))
         self.conn.commit()
