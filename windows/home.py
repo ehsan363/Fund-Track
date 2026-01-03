@@ -25,6 +25,7 @@ class MainWindow(QMainWindow):
 
         # Window icon
         self.setWindowIcon(QIcon('img/iconOrange#141414bgR.png'))
+        self.setStyleSheet('background-color: #141414;')
 
         # Font elements
         font = QFont()
@@ -50,7 +51,12 @@ class MainWindow(QMainWindow):
         toolbar = QToolBar("Main Toolbar", self)
         self.addToolBar(toolbar)
         toolbar.setMovable(False)
-        toolbar.setStyleSheet('Background-color: #ed7521; font-size: 20px;')
+        toolbar.setStyleSheet('''
+            Background-color: #ed7521; 
+            font-size: 20px;
+            border-radius: 15px;
+            margin: 5px;
+            padding-top: 5px;''')
         toolbar.setToolButtonStyle(Qt.ToolButtonTextUnderIcon)
 
         action_add = QAction(QIcon('img/refresh_icon.png'),"Refresh", self)

@@ -2,7 +2,7 @@ from PySide6.QtWidgets import QLabel, QVBoxLayout
 from PySide6.QtCore import Qt
 from data.database import DBmanager
 from helper.barchartMatplotlib import update_bar_chart
-from helper.dateAndTime import greetingText
+from helper.dateAndTime import greetingText, dateCompare
 
 def greetingRefresh(greetingLabel):
     with open('data/user.txt', 'r') as file:
@@ -41,8 +41,14 @@ def transactionHistoryRefresher(historyLayout):
 
     transactionHistory = db.history()  # Transaction history from DB
 
+    transactionHistoryDate0 = dateCompare(transactionHistory[0][2])
+    transactionHistoryDate1 = dateCompare(transactionHistory[0][2])
+    transactionHistoryDate2 = dateCompare(transactionHistory[0][2])
+    transactionHistoryDate3 = dateCompare(transactionHistory[0][2])
+    transactionHistoryDate4 = dateCompare(transactionHistory[0][2])
+
     transactionHistory0 = f'''{transactionHistory[0][0]:<30}             {transactionHistory[0][1] + ' AED':>15}
-{transactionHistory[0][2]}'''
+{transactionHistoryDate0}'''
     transactionLabel0 = QLabel(f'{transactionHistory0}')
     if transactionHistory[0][3] == 'expense':
         transactionColorCode = '#c71413'
@@ -54,7 +60,7 @@ def transactionHistoryRefresher(historyLayout):
                 margin-top: 10px;''')
 
     transactionHistory1 = f'''{transactionHistory[1][0]:<30}             {transactionHistory[1][1] + ' AED':>15}
-{transactionHistory[1][2]}'''
+{transactionHistoryDate1}'''
     transactionLabel1 = QLabel(f'{transactionHistory1}')
     if transactionHistory[1][3] == 'expense':
         transactionColorCode = '#c71413'
@@ -66,7 +72,7 @@ def transactionHistoryRefresher(historyLayout):
                 margin-top: 10px;''')
 
     transactionHistory2 = f'''{transactionHistory[2][0]:<30}             {transactionHistory[2][1] + ' AED':>15}
-{transactionHistory[2][2]}'''
+{transactionHistoryDate2}'''
     transactionLabel2 = QLabel(f'{transactionHistory2}')
     if transactionHistory[2][3] == 'expense':
         transactionColorCode = '#c71413'
@@ -78,7 +84,7 @@ def transactionHistoryRefresher(historyLayout):
                 margin-top: 10px;''')
 
     transactionHistory3 = f'''{transactionHistory[3][0]:<30}             {transactionHistory[3][1] + ' AED':>15}
-{transactionHistory[3][2]}'''
+{transactionHistoryDate3}'''
     transactionLabel3 = QLabel(f'{transactionHistory3}')
     if transactionHistory[3][3] == 'expense':
         transactionColorCode = '#c71413'
@@ -90,7 +96,7 @@ def transactionHistoryRefresher(historyLayout):
                 margin-top: 10px;''')
 
     transactionHistory4 = f'''{transactionHistory[4][0]:<30}             {transactionHistory[4][1] + ' AED':>15}
-{transactionHistory[4][2]}'''
+{transactionHistoryDate4}'''
     transactionLabel4 = QLabel(f'{transactionHistory4}')
     if transactionHistory[4][3] == 'expense':
         transactionColorCode = '#c71413'
