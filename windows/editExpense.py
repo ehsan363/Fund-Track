@@ -2,7 +2,7 @@ from PySide6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QLabel, QPushBu
 from PySide6.QtGui import QIcon, QFont, QKeySequence
 from PySide6.QtCore import Qt, Signal, QSize
 from data.database import DBmanager
-from helper.dateAndTime import dateExtraction
+from helper.dateAndTime import dateExtraction, NdateToFormattedDate
 from helper.HPrefresher import clear_layout
 
 class editExpenseWindow(QMainWindow):
@@ -151,8 +151,48 @@ class editExpenseWindow(QMainWindow):
                     ''')
         changeCategoryButton.clicked.connect(lambda: self.handleSelected('chCate'))
 
+        changeDateButton = QPushButton(QIcon('img/changeDate_icon.png'), 'Change Date')
+        changeDateButton.setIconSize(QSize(26, 26))
+        changeDateButton.setStyleSheet('''
+                            QPushButton {
+                                background-color: #ed7521;
+                                color: black;
+                                padding: 10px 20px 10px 20px;
+                                border-radius: 8px;
+                                font-size: 18px;
+                                text-align: left;
+                            }
+                            QPushButton:hover {
+                                background-color: #f08337;
+                            }
+                            QPushButton:pressed {
+                                background-color: #ed6709;
+                            }
+                            ''')
+        changeDateButton.clicked.connect(lambda: self.handleSelected('chDate'))
+
+        changeDescriptionButton = QPushButton(QIcon('img/changeDescription_icon.png'), 'Change Description')
+        changeDescriptionButton.setIconSize(QSize(26, 26))
+        changeDescriptionButton.setStyleSheet('''
+                            QPushButton {
+                                background-color: #ed7521;
+                                color: black;
+                                padding: 10px 20px 10px 20px;
+                                border-radius: 8px;
+                                font-size: 18px;
+                                text-align: left;
+                            }
+                            QPushButton:hover {
+                                background-color: #f08337;
+                            }
+                            QPushButton:pressed {
+                                background-color: #ed6709;
+                            }
+                            ''')
+        changeDescriptionButton.clicked.connect(lambda: self.handleSelected('chDesc'))
+
         self.textEntry = QLineEdit()
-        self.textEntry.setPlaceholderText('Amount: Number | Date: YYYY-MM-DD ')
+        self.textEntry.setPlaceholderText('Amount: Number | Date: DD-MM-YYYY ')
         self.textEntry.setAlignment(Qt.AlignLeft)
         self.textEntry.setStyleSheet('''
             font-size: 18px;
@@ -162,6 +202,8 @@ class editExpenseWindow(QMainWindow):
         buttonCardLayout.addWidget(changeAmountButton)
         buttonCardLayout.addWidget(changeTypeButton)
         buttonCardLayout.addWidget(changeCategoryButton)
+        buttonCardLayout.addWidget(changeDateButton)
+        buttonCardLayout.addWidget(changeDescriptionButton)
         buttonCardLayout.addWidget(self.textEntry)
 
         topRow.addWidget(buttonCard)
@@ -246,7 +288,7 @@ class editExpenseWindow(QMainWindow):
 
             label = QLabel(f'''{fullDate:<10}                               {i['category']:^22}                                                                           {i['account']:^20}                            {i['amount']:>8} AED
 
-{i['description']}                                                                                                                                                      {i['created_at']:>20}''')
+{i['description']:<40}                                                                                                                                                      {i['created_at']:>20}''')
             label.setStyleSheet(f'''
                 font-size: 24px;
                 padding: 10px;
@@ -319,6 +361,25 @@ class editExpenseWindow(QMainWindow):
             fetchedCategories = db.categories(fetchedType)
             if newCategory in fetchedCategories:
                 db.changeCategory(self.selectedIDs, newCategory)
+            self.transactionSort(self.sortToSaver)
+            self.deleteSelectedIDs()
+
+        elif function  == 'chDate': #DD-MM-YYYY
+            newDate = self.textEntry.text()
+            points = 0
+            if newDate[2] == '-' and newDate[5] == '-':
+                points += 1
+            if newDate[0].isnumeric() and newDate[1].isnumeric() and newDate[3].isnumeric()  and newDate[4].isnumeric() and newDate[6].isnumeric() and newDate[7].isnumeric() and newDate[8].isnumeric() and newDate[9].isnumeric():
+                points += 1
+            if points == 2:
+                formattedDate = NdateToFormattedDate(newDate)
+                db.changeDate(self.selectedIDs, formattedDate)
+            self.transactionSort(self.sortToSaver)
+            self.deleteSelectedIDs()
+
+        elif function == 'chDesc':
+            newDecription = self.textEntry.text()
+            db.changeDecription(self.selectedIDs, newDecription)
             self.transactionSort(self.sortToSaver)
             self.deleteSelectedIDs()
 

@@ -59,3 +59,7 @@ def dateFormat(ch):
     # Re-format datetime → string
     new_date = dt.strftime("20%y-%m-%d")
     return new_date
+
+def NdateToFormattedDate(newDate):
+    formatted_date = datetime.strptime(newDate, "%d-%m-%Y").strftime("%Y-%m-%d")
+    return formatted_date

@@ -184,6 +184,18 @@ class DBmanager:
             code = self.cursor.execute(f'UPDATE TRANSACTIONS SET CATEGORY = "{newCategory}" WHERE ID = {int(i)};')
             self.conn.commit()
 
+    def changeDate(self, selectedIDs, newDate):
+        self.cursor = self.conn.cursor()
+        for i in selectedIDs:
+            code = self.cursor.execute(f'UPDATE TRANSACTIONS SET DATE = "{newDate}" WHERE ID = {int(i)};')
+            self.conn.commit()
+
+    def changeDecription(self, selectedIDs, newDecription):
+        self.cursor = self.conn.cursor()
+        for i in selectedIDs:
+            code = self.cursor.execute(f'UPDATE TRANSACTIONS SET DESCRIPTION = "{newDecription}" WHERE ID = {int(i)};')
+            self.conn.commit()
+
     # Function to close SQLite
     def close(self):
         self.conn.close()
