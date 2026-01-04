@@ -91,9 +91,32 @@ class DBmanager:
         self.conn.commit()
         print('DONE')
 
-    def transactionHistory(self):
+    def transactionHistory(self, sortedTo):
         self.cursor = self.conn.cursor()
-        code = self.cursor.execute('SELECT * FROM TRANSACTIONS ORDER BY DATE DESC;')
+        if sortedTo == 'Date ASC':
+            code = self.cursor.execute('SELECT * FROM TRANSACTIONS ORDER BY DATE ASC;')
+
+        elif sortedTo == 'Date DESC':
+            code = self.cursor.execute('SELECT * FROM TRANSACTIONS ORDER BY DATE DESC;')
+
+        elif sortedTo == 'Created ASC':
+            code = self.cursor.execute('SELECT * FROM TRANSACTIONS ORDER BY CREATED_AT ASC;')
+
+        elif sortedTo == 'Created DESC':
+            code = self.cursor.execute('SELECT * FROM TRANSACTIONS ORDER BY CREATED_AT DESC;')
+
+        elif sortedTo == 'Amount H->L':
+            code = self.cursor.execute('SELECT * FROM TRANSACTIONS ORDER BY AMOUNT DESC;')
+
+        elif sortedTo == 'Amount L->H':
+            code = self.cursor.execute('SELECT * FROM TRANSACTIONS ORDER BY AMOUNT ASC;')
+
+        elif sortedTo == 'Income -> Expense':
+            code = self.cursor.execute('SELECT * FROM TRANSACTIONS ORDER BY TYPE DESC;')
+
+        elif sortedTo == 'Expense -> Income':
+            code = self.cursor.execute('SELECT * FROM TRANSACTIONS ORDER BY TYPE ASC;')
+
         self.data = code.fetchall()
         return self.data
 

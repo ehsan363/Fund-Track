@@ -1,8 +1,9 @@
-from PySide6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QLabel, QPushButton, QFrame, QScrollArea
+from PySide6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QLabel, QPushButton, QFrame, QScrollArea, QComboBox
 from PySide6.QtGui import QIcon, QFont, QKeySequence
 from PySide6.QtCore import Qt, Signal
 from data.database import DBmanager
 from helper.dateAndTime import dateExtraction
+from helper.HPrefresher import clear_layout
 
 class historyWindow(QMainWindow):
     goHome_Signal = Signal()
@@ -65,13 +66,64 @@ class historyWindow(QMainWindow):
         scroll.setWidgetResizable(True)
 
         content = QWidget()
-        contentLayout = QVBoxLayout(content)
-        contentLayout.setSpacing(30)
-        contentLayout.addStretch()
+        self.contentLayout = QVBoxLayout(content)
+        self.contentLayout.setSpacing(30)
 
+        scroll.setWidget(content)
+
+        # Sort Feature
+        self.sortMenu = QComboBox()
+        self.sortMenu.setStyleSheet("""
+            QComboBox {
+                font-size: 18px;
+                padding: 8px;
+                border-radius: 5px;
+                border: 1px solid #404040;
+                background-color: #222222;
+                font-family: Adwaita mono;
+            }
+            
+            QComboBox QAbstractItemView::item:hover {
+                background-color: #404040;
+                color: #ed7521;
+            }
+            
+            QComboBox QAbstractItemView::item:selected {
+                background-color: #222222;
+                color: #ed7521;
+            }
+            
+            QComboBox:focus {
+                border: 1px solid #ed7521;
+            }""")
+        self.sortMenu.addItems(
+            ['Date DESC',
+             'Date ASC',
+             'Created ASC',
+             'Created DESC',
+             'Amount H->L',
+             'Amount L->H',
+             'Income -> Expense',
+             'Expense -> Income'])
+        pageLayout.addWidget(self.sortMenu)
+
+        self.sortMenu.currentTextChanged.connect(self.transactionSort)
+        self.transactionSort(self.sortMenu.currentText())
+
+        pageLayout.addWidget(backButton)
+        pageLayout.addWidget(self.headingLabel)
+        pageLayout.addWidget(self.sortMenu)
+        pageLayout.addWidget(scroll, 1)
+        pageLayout.addStretch()
+
+        centralWidget.setStyleSheet('background-color: #141414; color: #ed7521;')
+        self.setCentralWidget(centralWidget)  # <-- Stuff into Central Widget
+
+    def transactionSort(self, sortedTo):
+        clear_layout(self.contentLayout)
+        self.contentLayout.addStretch()
         db = DBmanager()
-        data = db.transactionHistory()
-
+        data = db.transactionHistory(sortedTo)
         for i in data:
             year, month, day = dateExtraction(i['date'])
             fullDate = day+'-'+month+'-'+year
@@ -84,22 +136,11 @@ class historyWindow(QMainWindow):
             label = QLabel(f'''{fullDate:<10}                               {i['category']:^22}                                                                           {i['account']:^20}                            {i['amount']:>8} AED
 
 {i['description']}                                                                                                                                                      {i['created_at']:>20}''')
-
             label.setStyleSheet(f'''
-                font-size: 24px;
-                padding: 10px;
-                border: 3px solid {transactionColorCode};
-                border-radius: 15px;
-                color: #e8e8e8;''')
+                            font-size: 24px;
+                            padding: 10px;
+                            border: 3px solid {transactionColorCode};
+                            border-radius: 15px;
+                            color: #e8e8e8;''')
             label.setSizePolicy(label.sizePolicy().horizontalPolicy(), label.sizePolicy().verticalPolicy())
-            contentLayout.insertWidget(contentLayout.count() - 1, label)
-
-        scroll.setWidget(content)
-
-        pageLayout.addWidget(backButton)
-        pageLayout.addWidget(self.headingLabel)
-        pageLayout.addWidget(scroll, 1)
-        pageLayout.addStretch()
-
-        centralWidget.setStyleSheet('background-color: #141414; color: #ed7521;')
-        self.setCentralWidget(centralWidget)  # <-- Stuff into Central Widget
+            self.contentLayout.insertWidget(self.contentLayout.count() - 1, label)
