@@ -111,8 +111,28 @@ class editExpenseWindow(QMainWindow):
             ''')
         changeAmountButton.clicked.connect(lambda: self.handleSelected('chAmnt'))
 
+        changeTypeButton = QPushButton(QIcon('img/changeType_icon.png'), 'Change Type')
+        changeTypeButton.setIconSize(QSize(26,26))
+        changeTypeButton.setStyleSheet('''
+            QPushButton {
+                background-color: #ed7521;
+                color: black;
+                padding: 10px 20px 10px 20px;
+                border-radius: 8px;
+                font-size: 18px;
+                text-align: left;
+            }
+            QPushButton:hover {
+                background-color: #f08337;
+            }
+            QPushButton:pressed {
+                background-color: #ed6709;
+            }
+            ''')
+        changeTypeButton.clicked.connect(lambda: self.handleSelected('chType'))
+
         self.textEntry = QLineEdit()
-        self.textEntry.setPlaceholderText('Editing Text')
+        self.textEntry.setPlaceholderText('Amount: Number | Date: YYYY-MM-DD ')
         self.textEntry.setAlignment(Qt.AlignLeft)
         self.textEntry.setStyleSheet('''
             font-size: 18px;
@@ -120,6 +140,7 @@ class editExpenseWindow(QMainWindow):
 
         buttonCardLayout.addWidget(deleteButton)
         buttonCardLayout.addWidget(changeAmountButton)
+        buttonCardLayout.addWidget(changeTypeButton)
         buttonCardLayout.addWidget(self.textEntry)
 
         topRow.addWidget(buttonCard)
@@ -186,7 +207,9 @@ class editExpenseWindow(QMainWindow):
 
     def transactionSort(self, sortedTo):
         self.sortToSaver = sortedTo
-        self.deleteSelectedIDs(self.selectedIDs)
+        self.selectedIDs.clear()
+        self.transactionCheckBoxes.clear()
+        self.deleteSelectedIDs()
         clear_layout(self.contentLayout)
         self.contentLayout.addStretch()
         db = DBmanager()
@@ -242,8 +265,8 @@ class editExpenseWindow(QMainWindow):
             self.contentLayout.insertWidget(self.contentLayout.count() -1, selectCheckbox)
 
     def handleSelected(self, function):
+        self.selectedIDs.clear()
         for checkbox in self.transactionCheckBoxes:
-            print(checkbox)
             if checkbox.isChecked():
                 transactionID = checkbox.property('transaction_id')
                 self.selectedIDs.append(transactionID)
@@ -255,11 +278,19 @@ class editExpenseWindow(QMainWindow):
         if function == 'del':
             db.deleteSelected(self.selectedIDs)
             self.transactionSort(self.sortToSaver)
+            self.deleteSelectedIDs()
+
         elif function == 'chAmnt':
             newAmount = self.textEntry.text()
-            db.changeAmount(self.selectedIDs, int(newAmount))
+            if newAmount.isnumeric():
+                db.changeAmount(self.selectedIDs, float(newAmount))
             self.transactionSort(self.sortToSaver)
-        self.deleteSelectedIDs(self.selectedIDs)
+            self.deleteSelectedIDs()
 
-    def deleteSelectedIDs(self, selectedIDs):
-        return selectedIDs.clear(), self.transactionCheckBoxes.clear()
+        elif function == 'chType':
+            db.changeType(self.selectedIDs)
+            self.transactionSort(self.sortToSaver)
+            self.deleteSelectedIDs()
+
+    def deleteSelectedIDs(self):
+        self.selectedIDs.clear()

@@ -155,6 +155,21 @@ class DBmanager:
             code = self.cursor.execute(f'UPDATE TRANSACTIONS SET AMOUNT = {newAmount} WHERE ID = {int(i)};')
             self.conn.commit()
 
+    def changeType(self, selectedIDs):
+        self.cursor = self.conn.cursor()
+        for i in selectedIDs:
+            code = self.cursor.execute(f'SELECT TYPE FROM TRANSACTIONS WHERE ID = {int(i)};')
+            data = code.fetchall()
+            for j in data:
+                oldType = j['type']
+
+            if oldType == 'income':
+                newType = 'expense'
+            else:
+                newType = 'income'
+            code = self.cursor.execute(f'UPDATE TRANSACTIONS SET TYPE = "{newType}" WHERE ID = {int(i)};')
+            self.conn.commit()
+
     # Function to close SQLite
     def close(self):
         self.conn.close()
