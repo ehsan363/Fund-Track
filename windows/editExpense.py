@@ -134,61 +134,61 @@ class editExpenseWindow(QMainWindow):
         changeCategoryButton = QPushButton(QIcon('img/changeCategory_icon.png'), 'Change Category')
         changeCategoryButton.setIconSize(QSize(26, 26))
         changeCategoryButton.setStyleSheet('''
-                    QPushButton {
-                        background-color: #ed7521;
-                        color: black;
-                        padding: 10px 20px 10px 20px;
-                        border-radius: 8px;
-                        font-size: 18px;
-                        text-align: left;
-                    }
-                    QPushButton:hover {
-                        background-color: #f08337;
-                    }
-                    QPushButton:pressed {
-                        background-color: #ed6709;
-                    }
-                    ''')
+            QPushButton {
+                background-color: #ed7521;
+                color: black;
+                padding: 10px 20px 10px 20px;
+                border-radius: 8px;
+                font-size: 18px;
+                text-align: left;
+            }
+            QPushButton:hover {
+                background-color: #f08337;
+            }
+            QPushButton:pressed {
+                background-color: #ed6709;
+            }
+            ''')
         changeCategoryButton.clicked.connect(lambda: self.handleSelected('chCate'))
 
         changeDateButton = QPushButton(QIcon('img/changeDate_icon.png'), 'Change Date')
         changeDateButton.setIconSize(QSize(26, 26))
         changeDateButton.setStyleSheet('''
-                            QPushButton {
-                                background-color: #ed7521;
-                                color: black;
-                                padding: 10px 20px 10px 20px;
-                                border-radius: 8px;
-                                font-size: 18px;
-                                text-align: left;
-                            }
-                            QPushButton:hover {
-                                background-color: #f08337;
-                            }
-                            QPushButton:pressed {
-                                background-color: #ed6709;
-                            }
-                            ''')
+            QPushButton {
+                background-color: #ed7521;
+                color: black;
+                padding: 10px 20px 10px 20px;
+                border-radius: 8px;
+                font-size: 18px;
+                text-align: left;
+            }
+            QPushButton:hover {
+                background-color: #f08337;
+            }
+            QPushButton:pressed {
+                background-color: #ed6709;
+            }
+            ''')
         changeDateButton.clicked.connect(lambda: self.handleSelected('chDate'))
 
         changeDescriptionButton = QPushButton(QIcon('img/changeDescription_icon.png'), 'Change Description')
         changeDescriptionButton.setIconSize(QSize(26, 26))
         changeDescriptionButton.setStyleSheet('''
-                            QPushButton {
-                                background-color: #ed7521;
-                                color: black;
-                                padding: 10px 20px 10px 20px;
-                                border-radius: 8px;
-                                font-size: 18px;
-                                text-align: left;
-                            }
-                            QPushButton:hover {
-                                background-color: #f08337;
-                            }
-                            QPushButton:pressed {
-                                background-color: #ed6709;
-                            }
-                            ''')
+            QPushButton {
+                background-color: #ed7521;
+                color: black;
+                padding: 10px 20px 10px 20px;
+                border-radius: 8px;
+                font-size: 18px;
+                text-align: left;
+            }
+            QPushButton:hover {
+                background-color: #f08337;
+            }
+            QPushButton:pressed {
+                background-color: #ed6709;
+            }
+            ''')
         changeDescriptionButton.clicked.connect(lambda: self.handleSelected('chDesc'))
 
         self.textEntry = QLineEdit()
@@ -364,7 +364,7 @@ class editExpenseWindow(QMainWindow):
             self.transactionSort(self.sortToSaver)
             self.deleteSelectedIDs()
 
-        elif function  == 'chDate': #DD-MM-YYYY
+        elif function  == 'chDate':
             newDate = self.textEntry.text()
             points = 0
             if newDate[2] == '-' and newDate[5] == '-':
