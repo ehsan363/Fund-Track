@@ -6,6 +6,8 @@ from windows.editIncome import editIncomeWindow
 from windows.history import historyWindow
 from windows.user import userWindow
 from windows.settings import settingsWindow
+from helper.dateAndTime import reportDateCompare
+from data.database import DBmanager
 import sys
 
 class AppController:
@@ -21,6 +23,7 @@ class AppController:
         self.window.user_Signal.connect(self.open_user)
         self.window.settings_Signal.connect(self.open_settings)
         self.window.show()
+        self.monthlyReport()
 
     def refresh(self):
         self.window.refresh()
@@ -68,6 +71,40 @@ class AppController:
         self.sub_window.goHome_Signal.connect(self.go_home)
         self.sub_window.show()
         self.window.hide()
+
+    def monthlyReport(self):
+        with open('helper/reportGenerationDate.txt','r') as reportLog:
+            data = reportLog.read()
+        update, year, month = reportDateCompare(data)
+        if update == 'Outdated':
+            db = DBmanager()
+            categories, total_income = db.ReportData(year, month)
+            total_expense = db.Expense()
+
+            with open('data/budget.txt', 'r') as file:
+                budgetRead = file.readline()
+
+            TXT = f'''FundTrack Monthly Report
+=========================
+Year: {year}
+Month: {month}
+
+Total Income: {total_income} AED
+
+Budget: {float(budgetRead):,.2f} AED
+Total Expense: {total_expense} AED
+Saved: {float(budgetRead)-total_expense:,.2f} AED
+
+Expenses By Category:
+
+'''
+            for i in categories:
+                TXT+=f'- {i[0]}: {i[1]:,.2f} AED\n'
+            with open('helper/reportSavingPath.txt', 'r') as pathFile:
+                path = pathFile.read()
+
+            with open(path+f'Report{year}-{month}.txt','a') as report:
+                report.write(TXT)
 
 
 

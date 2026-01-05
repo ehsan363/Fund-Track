@@ -63,3 +63,13 @@ def dateFormat(ch):
 def NdateToFormattedDate(newDate):
     formatted_date = datetime.strptime(newDate, "%d-%m-%Y").strftime("%Y-%m-%d")
     return formatted_date
+
+def reportDateCompare(lastDate):
+    currentDate = todayDate().strftime('%Y-%m')
+    year1 = lastDate[0:4]
+    year2 = currentDate[0:4]
+
+    month1 = lastDate[5:7]
+    month2 = currentDate[5:7]
+    if int(year1) < int(year2) or int(month1) < int(month2):
+        return 'Outdated', year2, month2

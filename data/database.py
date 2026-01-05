@@ -196,6 +196,28 @@ class DBmanager:
             code = self.cursor.execute(f'UPDATE TRANSACTIONS SET DESCRIPTION = "{newDecription}" WHERE ID = {int(i)};')
             self.conn.commit()
 
+    def ReportData(self, year, month):
+        self.cursor = self.conn.cursor()
+        code = self.cursor.execute(f'''SELECT SUM(amount) AS total_income FROM transactions
+        WHERE type = 'income'
+        AND strftime('%Y-%m', date) = '{year}-{month}';''')
+        data = code.fetchall()
+        for i in data:
+            total_income = i['total_income']
+
+        code = self.cursor.execute('''SELECT category, SUM(amount) AS total_of_category FROM transactions
+        WHERE type = 'expense'
+        AND strftime('%Y-%m', date) = '2025-12'
+        GROUP BY category;''')
+
+        data = code.fetchall()
+        categories = []
+        for i in data:
+            categories.append([i["category"], i['total_of_category']])
+        return categories, total_income
     # Function to close SQLite
     def close(self):
         self.conn.close()
+
+db = DBmanager()
+db.ReportData('12','2025')
