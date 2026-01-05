@@ -23,10 +23,10 @@ def summaryCardRefresher(budgetLabel):
     db = DBmanager()  # Expense from Database to summary card
     totalExpense = db.Expense()
 
-    budget = f'''Budget: {int(budgetRead):,} AED
+    budget = f'''Budget: {float(budgetRead):,.2f} AED
 Expense: {totalExpense:,} AED
 ─────────────────────────
-Balance: {int(budgetRead) - totalExpense:,.2f} AED'''
+Balance: {float(budgetRead) - totalExpense:,.2f} AED'''
     budgetLabel.setText(budget)
 
 def clear_layout(layout):

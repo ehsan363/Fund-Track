@@ -1,4 +1,4 @@
-from PySide6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QLabel, QPushButton, QLineEdit
+from PySide6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QLabel, QPushButton, QLineEdit, QDoubleSpinBox
 from PySide6.QtGui import QIcon, QFont, QKeySequence
 from PySide6.QtCore import Qt, Signal
 
@@ -77,6 +77,34 @@ class userWindow(QMainWindow):
             }
         """)
 
+        self.budgetEntry = QDoubleSpinBox()
+        self.budgetEntry.setDecimals(2)
+        self.budgetEntry.setMaximum(10_000_000)
+        self.budgetEntry.setSuffix(' AED')
+        self.budgetEntry.setStyleSheet('''
+            QDoubleSpinBox {
+                background-color: #222;
+                color: #eee;
+                border: 1px solid #444;
+                border-radius: 8px;
+                padding: 6px 10px;
+                font-size: 16px;
+            }
+            
+            QDoubleSpinBox:hover {
+                border: 1px solid #666;
+            }
+            
+            QDoubleSpinBox:focus {
+                border: 1px solid #ed7521;
+            }
+            
+            QDoubleSpinBox::up-button,
+            QDoubleSpinBox::down-button {
+                width: 0px;
+                border: none;
+            }''')
+
         submitBtn = QPushButton('Enter')
         submitBtn.setStyleSheet('''
             QPushButton {
@@ -101,6 +129,7 @@ class userWindow(QMainWindow):
         pageLayout.addWidget(backButton)
         pageLayout.addWidget(self.headingLabel)
         pageLayout.addWidget(self.enterName)
+        pageLayout.addWidget(self.budgetEntry)
         pageLayout.addWidget(submitBtn)
 
 
@@ -113,6 +142,12 @@ class userWindow(QMainWindow):
 
     def changeName(self):
         newName = self.enterName.text()
-        with open('data/user.txt', 'w') as nameFile:
-            nameFile.write(f'{newName}\n')
+        if len(newName) != 0:
+            with open('data/user.txt', 'w') as nameFile:
+                nameFile.write(f'{newName}\n')
+        if len(self.budgetEntry.text()) != 0:
+            newBudget = self.budgetEntry.text()[0:-4]
+            print(newBudget)
+            with open('data/budget.txt', 'w') as budgetFile:
+                budgetFile.write(newBudget)
         self.goHome_Signal.emit()
