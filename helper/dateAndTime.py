@@ -1,6 +1,5 @@
 from datetime import datetime, date
 import random
-from itertools import compress
 
 from pygame.sprite import collide_mask
 
