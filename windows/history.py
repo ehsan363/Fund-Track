@@ -4,6 +4,7 @@ from PySide6.QtCore import Qt, Signal
 from data.database import DBmanager
 from helper.dateAndTime import dateExtraction
 from helper.HPrefresher import clear_layout
+import json
 
 class historyWindow(QMainWindow):
     goHome_Signal = Signal()
@@ -124,6 +125,11 @@ class historyWindow(QMainWindow):
         self.contentLayout.addStretch()
         db = DBmanager()
         data = db.transactionHistory(sortedTo)
+
+        with open('data/config.json') as f:
+            read = json.load(f)
+            currencySuffix = f' {read["CurrencySuffix"]}'
+
         for i in data:
             year, month, day = dateExtraction(i['date'])
             fullDate = day+'-'+month+'-'+year
@@ -133,7 +139,7 @@ class historyWindow(QMainWindow):
             elif i['type'] == 'expense':
                 transactionColorCode = '#c71413'
 
-            label = QLabel(f'''{fullDate:<10}                               {i['category']:^22}                                                                           {i['account']:^20}                            {i['amount']:>8} AED
+            label = QLabel(f'''{fullDate:<10}                               {i['category']:^22}                                                                           {i['account']:^20}                            {i['amount']:>8}{currencySuffix}
 
 {i['description']}                                                                                                                                                      {i['created_at']:>20}''')
             label.setStyleSheet(f'''

@@ -86,7 +86,50 @@ class settingsWindow(QMainWindow):
             ''')
         exportBtn.clicked.connect(self.pathChanger)
 
+        self.currencyEntry = QLineEdit()
+        self.currencyEntry.setPlaceholderText('Currency Symbol')
+        self.currencyEntry.setFixedWidth(230)
+        self.currencyEntry.setStyleSheet('''
+            font-size: 18px;
+            font-family: Adwaita mono;
+            margin-left: 35px;
+            border: 2px solid #ed7521;
+            border-radius: 10px;
+            padding: 5px 10px 5px;
+            ''')
+
+        currencyCard = QFrame()
+        currencyCard.setStyleSheet('''
+            font-size: 18px;
+            font-family: Adwaita mono;
+        ''')
+        currencyCardLayout = QVBoxLayout(currencyCard)
+        currencyCardLayout.setAlignment(Qt.AlignLeft)
+        currencyCardLayout.addWidget(self.currencyEntry)
+
+
+        saveBtn = QPushButton('Save')
+        saveBtn.setStyleSheet('''
+            QPushButton {
+                background-color: #ed7521;
+                color: black;
+                padding: 10px 20px 10px 20px;
+                border-radius: 8px;
+                font-size: 16px;
+                text-align: left;
+            }
+            QPushButton:hover {
+                background-color: #f08337;
+            }
+            QPushButton:pressed {
+                background-color: #ed6709;
+            }
+            ''')
+        saveBtn.clicked.connect(self.saveSettings)
+
         pathCardLayout.addWidget(exportBtn)
+        pathCardLayout.addWidget(currencyCard)
+        pathCardLayout.addWidget(saveBtn)
 
         # Shortcuts
         shortcutsCard = QFrame()
@@ -208,7 +251,6 @@ class settingsWindow(QMainWindow):
 
     def pathChanger(self):
         folder = QFileDialog.getExistingDirectory(self, 'Select Directory', '', QFileDialog.ShowDirsOnly)
-        print(folder)
 
         with open('data/config.json', 'r') as f:
             data = json.load(f)
@@ -217,3 +259,16 @@ class settingsWindow(QMainWindow):
 
         with open('data/config.json', 'w') as f:
             json.dump(data, f, indent=4)
+
+    def saveSettings(self):
+        newCurrency = self.currencyEntry.text()
+
+        with open('data/config.json', 'r') as f:
+            data = json.load(f)
+
+        data['CurrencySuffix'] = newCurrency
+
+        with open('data/config.json', 'w') as f:
+            json.dump(data, f, indent=4)
+
+        self.currencyEntry.clear()

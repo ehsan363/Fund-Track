@@ -4,6 +4,7 @@ from PySide6.QtCore import Qt, Signal, QSize
 from data.database import DBmanager
 from helper.dateAndTime import dateExtraction, NdateToFormattedDate
 from helper.HPrefresher import clear_layout
+import json
 
 class editExpenseWindow(QMainWindow):
     goHome_Signal = Signal()
@@ -275,6 +276,9 @@ class editExpenseWindow(QMainWindow):
         self.deleteSelectedIDs()
         clear_layout(self.contentLayout)
         self.contentLayout.addStretch()
+        with open('data/config.json') as f:
+            data = json.load(f)
+            currencySuffix = f' {data["CurrencySuffix"]}'
         db = DBmanager()
         data = db.editingTransactionHistory(sortedTo, 'expense')
         for i in data:
@@ -286,7 +290,7 @@ class editExpenseWindow(QMainWindow):
             elif i['type'] == 'expense':
                 transactionColorCode = '#c71413'
 
-            label = QLabel(f'''{fullDate:<10}                               {i['category']:^22}                                                                           {i['account']:^20}                            {i['amount']:>8} AED
+            label = QLabel(f'''{fullDate:<10}                               {i['category']:^22}                                                                           {i['account']:^20}                            {i['amount']:>8}{currencySuffix}
 
 {i['description']:<40}                                                                                                                                                      {i['created_at']:>20}''')
             label.setStyleSheet(f'''

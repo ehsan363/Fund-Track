@@ -3,6 +3,7 @@ from PySide6.QtGui import QIcon, QFont, QKeySequence
 from PySide6.QtCore import Qt, Signal, QDate
 from helper.dateAndTime import todayDate, dateFormat
 from data.database import DBmanager
+import json
 
 class addTransactionWindow(QMainWindow):
     goHome_Signal = Signal()
@@ -42,8 +43,6 @@ class addTransactionWindow(QMainWindow):
         row4 = QHBoxLayout()
         row4.setAlignment(Qt.AlignLeft)
 
-        row5 = QHBoxLayout()
-        row5.setAlignment(Qt.AlignLeft)
 
         # UI elements
         # Heading
@@ -145,7 +144,12 @@ class addTransactionWindow(QMainWindow):
         self.amountEntry = QDoubleSpinBox()
         self.amountEntry.setDecimals(2)
         self.amountEntry.setMaximum(10_000_000)
-        self.amountEntry.setSuffix(' AED')
+
+        with open('data/config.json') as f:
+            data = json.load(f)
+            currencySuffix = f' {data["CurrencySuffix"]}'
+
+        self.amountEntry.setSuffix(currencySuffix)
         self.amountEntry.setStyleSheet('''
             QDoubleSpinBox {
                 background-color: #222;
@@ -374,7 +378,11 @@ class addTransactionWindow(QMainWindow):
         new_date = dateFormat(date)
         description = self.descriptionEntry.toPlainText()
         account = self.accountEntry.currentText()
-        amount = amount.rstrip(' AED')
+
+        with open('data/config.json') as f:
+            data = json.load(f)
+            currencySuffix = f' {data["CurrencySuffix"]}'
+        amount = amount.rstrip(currencySuffix)
 
         db.addTransactionToDB(float(amount), IorE.lower(), category, new_date, description, account)
         if self.resetCh.isChecked():

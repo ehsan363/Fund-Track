@@ -81,7 +81,11 @@ class userWindow(QMainWindow):
         self.budgetEntry = QDoubleSpinBox()
         self.budgetEntry.setDecimals(2)
         self.budgetEntry.setMaximum(10_000_000)
-        self.budgetEntry.setSuffix(' AED')
+
+        with open('data/config.json') as f:
+            data = json.load(f)
+            currencySuffix = f' {data["CurrencySuffix"]}'
+        self.budgetEntry.setSuffix(currencySuffix)
         self.budgetEntry.setStyleSheet('''
             QDoubleSpinBox {
                 background-color: #222;

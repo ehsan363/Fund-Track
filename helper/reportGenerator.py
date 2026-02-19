@@ -16,23 +16,27 @@ def monthlyReport():
             categories, total_income = db.ReportData(year, month)
             total_expense = db.Expense()
 
+            with open('data/config.json') as f:
+                data = json.load(f)
+                currencySuffix = f' {data["CurrencySuffix"]}'
+
             budgetRead = JSONfile['User'][1]['Budget']
             TXT = f'''FundTrack Monthly Report
 =========================
 Year: {year}
 Month: {month}
 
-Total Income: {total_income} AED
+Total Income: {total_income}{currencySuffix}
 
-Budget: {float(budgetRead):,.2f} AED
-Total Expense: {total_expense} AED
-Saved: {float(budgetRead)-total_expense:,.2f} AED
+Budget: {float(budgetRead):,.2f}{currencySuffix}
+Total Expense: {total_expense}{currencySuffix}
+Saved: {float(budgetRead)-total_expense:,.2f}{currencySuffix}
 
 Expenses By Category:
 
 '''
             for i in categories:
-                TXT+=f'- {i[0]}: {i[1]:,.2f} AED\n'
+                TXT+=f'- {i[0]}: {i[1]:,.2f}{currencySuffix}\n'
 
 
             with open(str(path)+f'/Report{year}-{month}.txt','a') as report:
