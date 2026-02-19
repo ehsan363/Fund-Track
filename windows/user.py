@@ -1,6 +1,7 @@
 from PySide6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QLabel, QPushButton, QLineEdit, QDoubleSpinBox
 from PySide6.QtGui import QIcon, QFont, QKeySequence
 from PySide6.QtCore import Qt, Signal
+import json
 
 class userWindow(QMainWindow):
     goHome_Signal = Signal()
@@ -143,11 +144,20 @@ class userWindow(QMainWindow):
     def changeName(self):
         newName = self.enterName.text()
         if len(newName) != 0:
-            with open('data/user.txt', 'w') as nameFile:
-                nameFile.write(f'{newName}\n')
+            with open('data/data.json', 'r') as f:
+                data = json.load(f)
+
+            data['user'][0]['Name'] = newName
+
+            with open('data/config.json', 'w') as f:
+                json.dump(data, f, indent=4)
         if len(self.budgetEntry.text()) != 0:
             newBudget = self.budgetEntry.text()[0:-4]
-            print(newBudget)
-            with open('data/budget.txt', 'w') as budgetFile:
-                budgetFile.write(newBudget)
+            with open('data/config.json', 'r') as f:
+                data = json.load(f)
+
+            data['User'][1]['Budget'] = newBudget
+
+            with open('data/config.json', 'w') as f:
+                json.dump(data, f, indent=4)
         self.goHome_Signal.emit()

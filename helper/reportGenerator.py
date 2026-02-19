@@ -1,24 +1,22 @@
 from helper.dateAndTime import reportDateCompare
 from data.database import DBmanager
 from pathlib import Path
+import json
 
 def monthlyReport():
-    with open('helper/reportSavingPath.txt', 'r') as pathFile:
-        path = Path(pathFile.read())
+    with open('data/config.json', 'r') as pathFile:
+        JSONfile = json.load(pathFile)
+        path = Path(JSONfile['Report'][0]['Path'])
 
     if path.exists():
-        with open('helper/reportGenerationDate.txt','r') as reportLog:
-            data = reportLog.read()
+        data = JSONfile['Report'][1]['LastGenDate']
         update, year, month = reportDateCompare(data)
         if update == 'Outdated':
-            print('Outdated')
             db = DBmanager()
             categories, total_income = db.ReportData(year, month)
             total_expense = db.Expense()
 
-            with open('data/budget.txt', 'r') as file:
-                budgetRead = file.readline()
-
+            budgetRead = JSONfile['User'][1]['Budget']
             TXT = f'''FundTrack Monthly Report
 =========================
 Year: {year}
@@ -39,5 +37,11 @@ Expenses By Category:
 
             with open(str(path)+f'/Report{year}-{month}.txt','a') as report:
                 report.write(TXT)
-            with open('helper/reportGenerationDate.txt','w') as reportLog:
-                reportLog.write(f'{year}-{month}')
+
+            with open('data/config.json', 'r') as f:
+                data = json.load(f)
+
+            data['Report'][1]['LastGenDate'] = f'{year}-{month}'
+
+            with open('data/config.json', 'w') as f:
+                json.dump(data, f, indent=4)

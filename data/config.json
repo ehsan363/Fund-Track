@@ -1,0 +1,11 @@
+{
+"User": [
+  {"Name": "Ali"},
+  {"Budget": "200000"}
+],
+"Report": [
+  {"Path": "/home/Downloads"},
+  {"LastGenDate": "2026-01"}
+],
+"Version": "1.0"
+}

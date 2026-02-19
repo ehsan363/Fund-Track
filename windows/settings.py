@@ -2,6 +2,7 @@ from PySide6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QLabel, QPushBu
 from PySide6.QtGui import QIcon, QFont, QKeySequence
 from PySide6.QtCore import Qt, Signal
 from helper.reportGenerator import monthlyReport
+import json
 
 class settingsWindow(QMainWindow):
     goHome_Signal = Signal()
@@ -207,5 +208,12 @@ class settingsWindow(QMainWindow):
 
     def pathChanger(self):
         folder = QFileDialog.getExistingDirectory(self, 'Select Directory', '', QFileDialog.ShowDirsOnly)
-        with open("helper/reportSavingPath.txt", 'w') as path:
-            path.write(folder)
+        print(folder)
+
+        with open('data/config.json', 'r') as f:
+            data = json.load(f)
+
+        data['Report'][0]['Path'] = folder
+
+        with open('data/config.json', 'w') as f:
+            json.dump(data, f, indent=4)
