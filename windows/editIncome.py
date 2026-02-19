@@ -275,7 +275,6 @@ class editIncomeWindow(QMainWindow):
         self.transactionCheckBoxes.clear()
         self.deleteSelectedIDs()
         clear_layout(self.contentLayout)
-        self.contentLayout.addStretch()
         with open('data/config.json') as f:
             data = json.load(f)
             currencySuffix = f' {data["CurrencySuffix"]}'
@@ -290,12 +289,11 @@ class editIncomeWindow(QMainWindow):
             elif i['type'] == 'expense':
                 transactionColorCode = '#c71413'
 
-            label = QLabel(f'''{fullDate:<10}                               {i['category']:^22}                                                                           {i['account']:^20}                            {i['amount']:>8}{currencySuffix}
+            label = QLabel(f'''{fullDate:<10}                    {i['category']:^22}              {i['account']:^20}                        {i['amount']:>8}{currencySuffix}
 
-{i['description']:<40}                                                                                                                                                      {i['created_at']:>20}''')
+{i['description']}                                                                                     {i['created_at']:>20}''')
             label.setStyleSheet(f'''
                 font-size: 24px;
-                padding: 10px;
                 border: 3px solid {transactionColorCode};
                 border-radius: 15px;
                 color: #e8e8e8;''')

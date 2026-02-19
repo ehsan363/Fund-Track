@@ -21,7 +21,7 @@ class MainWindow(QMainWindow):
         self.setWindowTitle('FundTrack') # Title of the window
         # Window size
         self.resize(1920, 1080)
-        self.setMinimumSize(1170, 650)
+        # self.setMinimumSize(1280, 720)
 
         # Window icon
         self.setWindowIcon(QIcon('img/iconOrange#141414bgR.png'))
@@ -52,7 +52,7 @@ class MainWindow(QMainWindow):
         self.addToolBar(toolbar)
         toolbar.setMovable(False)
         toolbar.setStyleSheet('''
-            Background-color: #ed7521; 
+            Background-color: #ed7521;
             font-size: 20px;
             border-radius: 15px;
             margin: 5px;

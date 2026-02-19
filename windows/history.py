@@ -122,7 +122,6 @@ class historyWindow(QMainWindow):
 
     def transactionSort(self, sortedTo):
         clear_layout(self.contentLayout)
-        self.contentLayout.addStretch()
         db = DBmanager()
         data = db.transactionHistory(sortedTo)
 
@@ -139,12 +138,11 @@ class historyWindow(QMainWindow):
             elif i['type'] == 'expense':
                 transactionColorCode = '#c71413'
 
-            label = QLabel(f'''{fullDate:<10}                               {i['category']:^22}                                                                           {i['account']:^20}                            {i['amount']:>8}{currencySuffix}
+            label = QLabel(f'''{fullDate:<10}                    {i['category']:^22}              {i['account']:^20}                        {i['amount']:>8}{currencySuffix}
 
-{i['description']}                                                                                                                                                      {i['created_at']:>20}''')
+{i['description']}                                                                                     {i['created_at']:>20}''')
             label.setStyleSheet(f'''
                 font-size: 24px;
-                padding: 10px;
                 border: 3px solid {transactionColorCode};
                 border-radius: 15px;
                 color: #e8e8e8;''')

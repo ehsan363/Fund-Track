@@ -11,7 +11,7 @@ def greetingRefresh(greetingLabel):
 
     greeting = greetingText()
     if greeting[0] == 'G' or greeting[0] == 'W':
-        greetingLabel.setStyleSheet('margin-top:25%;')
+        greetingLabel.setStyleSheet('margin-top:0%;')
         greetingLabel.setText(f'{greeting} {username.title()}')
     else:
         greetingLabel.setStyleSheet('margin-top:0%;')
