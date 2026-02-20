@@ -1,6 +1,7 @@
 # Fund Track
-A Fund Track is personal finance manager program that is built using Python. It can be used by anyone to track their personal finances.
+![Fund-Track](img/iconOrange141414.png)
 
+Fund Track is personal finance manager program that is built using Python. It can be used by anyone to track their personal finances.
 ## Features
 - Add expenses and sources of income
 - Edit expenses and sources of income
