@@ -156,7 +156,7 @@ class userWindow(QMainWindow):
             with open('data/config.json', 'w') as f:
                 json.dump(data, f, indent=4)
         if len(self.budgetEntry.text()) != 0:
-            newBudget = self.budgetEntry.text()[0:-4]
+            newBudget = self.budgetEntry.text()[0:-5]
             with open('data/config.json', 'r') as f:
                 data = json.load(f)
 
