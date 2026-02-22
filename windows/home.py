@@ -1,12 +1,31 @@
-# Importing modules from PySide6 library
+'''
+This file controls all the GUI elements of the homepage window.
+This file will get opened by the main.py file when the application is started, and when,
+the back button is pressed form any of the subwindows.
+This window does not give the data for the labels which can update their info, they are done by another file, HPrefresher.py.
+This is so that when you click the refresh button or when you come back to the Homepage after you made some changes,
+we can update the changes onto the homepage
+'''
+
+# Importing GUI elements
 from PySide6.QtWidgets import QMainWindow, QWidget, QLabel, QVBoxLayout, QHBoxLayout, QToolBar, QFrame
 from PySide6.QtGui import QAction, QFont, QIcon, QKeySequence
 from PySide6.QtCore import Qt, Signal
+
+# Importing functions from other files
 from data.database import DBmanager
 from helper.barchartMatplotlib import initiation, plot_bar_chart
 from helper.HPrefresher import summaryCardRefresher, transactionHistoryRefresher, greetingRefresh, barchartRefresher
 
 class MainWindow(QMainWindow):
+    '''
+    Controls all the GUI elements and functions of the homepage.
+    Include:
+    - Displaying a greeting for the user
+    - A barchart using matplotlib of Income and Expense
+    - Five recent transactions
+    - Displays budget, expense and whats left under summary
+    '''
     refresh_Signal = Signal()
     addTransaction_Signal = Signal()
     editExpense_Signal = Signal()
@@ -17,13 +36,11 @@ class MainWindow(QMainWindow):
 
     def __init__(self):
         super().__init__()
+        self.setWindowTitle('FundTrack')
 
-        self.setWindowTitle('FundTrack') # Title of the window
-        # Window size
+        # Window settings
         self.resize(1920, 1080)
-        # self.setMinimumSize(1280, 720)
 
-        # Window icon
         self.setWindowIcon(QIcon('img/iconOrange#141414bgR.png'))
         self.setStyleSheet('background-color: #141414;')
 
@@ -32,21 +49,29 @@ class MainWindow(QMainWindow):
         font.setPointSize(26)
         font.setBold(True)
 
-        # Layout
+        # Layouts
+        '''
+        The final layout in which all the elements are at last added on to
+        '''
         pageLayout = QVBoxLayout()
         pageLayout.setAlignment(Qt.AlignTop)
         pageLayout.setSpacing(35)
 
+        '''
+        Layout for the elements that are the top row of the whole windows. Such as the 'Summary' and greeting
+        '''
         topRow = QHBoxLayout()
         topRow.setAlignment(Qt.AlignLeft)
         topRow.setSpacing(350)
 
+        '''
+        Layout for the elements on the bottom row of the window. Such as the recent transaction list and the barchart
+        '''
         bottomRow = QHBoxLayout()
         bottomRow.setAlignment(Qt.AlignLeft)
         bottomRow.setSpacing(210)
 
         # Create UI elements
-
         # Toolbar options
         toolbar = QToolBar("Main Toolbar", self)
         self.addToolBar(toolbar)
@@ -59,6 +84,12 @@ class MainWindow(QMainWindow):
             padding-top: 5px;''')
         toolbar.setToolButtonStyle(Qt.ToolButtonTextUnderIcon)
 
+        '''
+        1. Icon and text for the option
+        2. Adding the option to the toolbar
+        3. Adding function to the option
+        4. Adding shortcut key to the option
+        '''
         action_add = QAction(QIcon('img/refresh_icon.png'),"Refresh", self)
         toolbar.addAction(action_add)
         action_add.triggered.connect(self.refresh_Signal.emit)
@@ -96,6 +127,9 @@ class MainWindow(QMainWindow):
 
 
         # No row
+        '''
+        Homepage text added without any rows.
+        '''
         self.headingLabel = QLabel("HomePage")
         self.headingLabel.setAlignment(Qt.AlignLeft)
         self.headingLabel.setStyleSheet("""
@@ -105,6 +139,14 @@ class MainWindow(QMainWindow):
             padding-left: 10px;""")
 
         # Top row
+        '''
+        Top row is after the "HomePage" text on the top of the window.
+        summaryCard is to hold the elements inside the summary.
+        summaryLayout is the layout of the card. I used vartical and therfore the elements inside are vertical in order.
+        
+        greetingCard is the card in which the label with the greeting text shows in the window.
+        greetingLayout is the layout of the greetingCard. The card greets the user whenever they enter the homepage.
+        '''
         summaryCard = QFrame() # Summary card
         summaryCard.setFixedWidth(450)
         summaryCard.setStyleSheet("""
@@ -135,7 +177,7 @@ class MainWindow(QMainWindow):
         topRow.addWidget(summaryCard)
 
 
-        # Greeting card
+        # Card for Greeting
         greetingCard = QFrame()
         greetingCard.setFixedWidth(1050)
         greetingCard.setFixedHeight(100)
@@ -156,6 +198,16 @@ class MainWindow(QMainWindow):
         topRow.addWidget(greetingCard)
 
         # Bottom row
+        '''
+        Bottom Row is after the top row, obviously and here the elements on the bottom part of the window are added.
+        historyCard is the card in which the five most recent transactions will be shown.
+        historyLayout is layout for historyCard. It is vertical, therfore the labels in veritcal order.
+        
+        barCard is the card in which the canvas for matplotlib goes.
+        barLayout is the layout for barCard to diaplay the barchart.
+        The barchart is drawn using functions which are located in other file. Only the final data is being used
+        in this file.
+        '''
         historyCard = QFrame()
         historyCard.setFixedWidth(900)
         historyCard.setStyleSheet('''
@@ -175,10 +227,12 @@ class MainWindow(QMainWindow):
         self.historyLayout = QVBoxLayout(historyCard)
         self.historyLayout.addWidget(self.historyLabel)
 
-        # Bargraph with Matplotlib
+        # Bar chart with Matplotlib
         barCard = QFrame()
-        barCard.setFixedWidth(700)
+        barCard.setFixedWidth(750)
         barCard.setStyleSheet('''
+            background-color: #222222;
+            border: 1px solid #222222;
             border-radius: 20px;''')
 
 
@@ -195,20 +249,21 @@ class MainWindow(QMainWindow):
         pageLayout.addLayout(topRow)
         pageLayout.addLayout(bottomRow)
 
-        pageLayout.addStretch() # <-- Should be last! To make everything in layout align to the left
+        pageLayout.addStretch()
 
         centralWidget = QWidget()
         centralWidget.setLayout(pageLayout)
         centralWidget.setStyleSheet('background-color: #141414; color: #ed7521;')
-        self.setCentralWidget(centralWidget) # <-- Stuff into Central Widget
+        self.setCentralWidget(centralWidget)
 
-        self.refresh()
-
-    def showHomepage(self):
-        self.show()
         self.refresh()
 
     def refresh(self):
+        '''
+        Function to refresh every data inside the homepage window.
+        This function calls other individual functions which are assigned to refresh the data of each element
+        in the homepage window.
+        '''
         summaryCardRefresher(self.budgetLabel)
         transactionHistoryRefresher(self.historyLayout)
         greetingRefresh(self.greetingLabel)
