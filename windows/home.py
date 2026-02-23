@@ -1,6 +1,6 @@
 '''
 This file controls all the GUI elements of the homepage window.
-This file will get opened by the main.py file when the application is started, and when,
+This file will get opened by the main.py file when the application is started, and when
 the back button is pressed form any of the subwindows.
 This window does not give the data for the labels which can update their info, they are done by another file, HPrefresher.py.
 This is so that when you click the refresh button or when you come back to the Homepage after you made some changes,
@@ -142,7 +142,7 @@ class MainWindow(QMainWindow):
         '''
         Top row is after the "HomePage" text on the top of the window.
         summaryCard is to hold the elements inside the summary.
-        summaryLayout is the layout of the card. I used vartical and therfore the elements inside are vertical in order.
+        summaryLayout is the layout of the card. I used vertical and therefore the elements inside are vertical in order.
         
         greetingCard is the card in which the label with the greeting text shows in the window.
         greetingLayout is the layout of the greetingCard. The card greets the user whenever they enter the homepage.
@@ -201,10 +201,10 @@ class MainWindow(QMainWindow):
         '''
         Bottom Row is after the top row, obviously and here the elements on the bottom part of the window are added.
         historyCard is the card in which the five most recent transactions will be shown.
-        historyLayout is layout for historyCard. It is vertical, therfore the labels in veritcal order.
+        historyLayout is layout for historyCard. It is vertical, therefore the labels in vertical order.
         
         barCard is the card in which the canvas for matplotlib goes.
-        barLayout is the layout for barCard to diaplay the barchart.
+        barLayout is the layout for barCard to display the barchart.
         The barchart is drawn using functions which are located in other file. Only the final data is being used
         in this file.
         '''

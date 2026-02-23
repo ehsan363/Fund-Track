@@ -1,3 +1,10 @@
+'''
+This file controls all the GUI elements of the history window.
+This file will be opened by main.py whenever history button is clicked on the taskbar,
+or when the shortcut key is pressed.
+'''
+
+# Importing GUI elements
 from PySide6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QLabel, QPushButton, QFrame, QScrollArea, QComboBox
 from PySide6.QtGui import QIcon, QFont, QKeySequence
 from PySide6.QtCore import Qt, Signal
@@ -7,17 +14,22 @@ from helper.HPrefresher import clear_layout
 import json
 
 class historyWindow(QMainWindow):
+    '''
+    Controls all the GUI elements and functions of the history window.
+    Include:
+    - Function to change report export path
+    - Function to change the suffix currency symbol
+    - Display all the available shortcuts in the program
+    '''
     goHome_Signal = Signal()
 
     def __init__(self):
         super().__init__()
-        self.setWindowTitle('FundTrack') # Title of the window
+        self.setWindowTitle('FundTrack')
 
-        # Window size
         self.resize(1920, 1080)
         self.setMinimumSize(1170, 650)
 
-        # Window icon
         self.setWindowIcon(QIcon('img/iconOrange#141414bgR.png'))
 
         # Font elements
@@ -33,6 +45,13 @@ class historyWindow(QMainWindow):
         pageLayout.setSpacing(35)
 
         # UI elements
+        '''
+        headingLabel is the label for the heading text.
+        
+        backButton is the button on the top part of the window that allows user to return to the HomePage.
+        
+        scroll is the varibale which allows the user to scroll through the page of recent transactions.
+        '''
         # Heading
         self.headingLabel = QLabel("""History
 ──────────────────────────────────────────────────────────────────────────────────────────""")
@@ -73,6 +92,10 @@ class historyWindow(QMainWindow):
         scroll.setWidget(content)
 
         # Sort Feature
+        '''
+        sortMenu is the menu in which all the options in which you can sort the transaction are.
+        trasanctionSort, the function will be called whenever the option inside the menu is changed.
+        '''
         self.sortMenu = QComboBox()
         self.sortMenu.setStyleSheet("""
             QComboBox {
@@ -121,6 +144,16 @@ class historyWindow(QMainWindow):
         self.setCentralWidget(centralWidget)  # <-- Stuff into Central Widget
 
     def transactionSort(self, sortedTo):
+        '''
+        This function is to sort out the transaction history according to the option selected from the menu.
+        This function will be called whenever the history windows is opened,
+        and when the option inside the sorter is changed.
+
+        - First clears out layout with another function imported.
+        - Fetches the suffix from the JSON file.
+        - Converts the date format, selects border color accoridng to the transaction type and
+          creates Label with content.
+        '''
         clear_layout(self.contentLayout)
         db = DBmanager()
         data = db.transactionHistory(sortedTo)
@@ -147,5 +180,4 @@ class historyWindow(QMainWindow):
                 border-radius: 15px;
                 color: #e8e8e8;''')
 
-            label.setSizePolicy(label.sizePolicy().horizontalPolicy(), label.sizePolicy().verticalPolicy())
-            self.contentLayout.insertWidget(self.contentLayout.count() - 1, label)
+            self.contentLayout.addWidget(label)
