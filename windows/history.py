@@ -8,9 +8,13 @@ or when the shortcut key is pressed.
 from PySide6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QLabel, QPushButton, QFrame, QScrollArea, QComboBox
 from PySide6.QtGui import QIcon, QFont, QKeySequence
 from PySide6.QtCore import Qt, Signal
+
+# Importing functions from other files
 from data.database import DBmanager
 from helper.dateAndTime import dateExtraction
 from helper.HPrefresher import clear_layout
+
+# json to write and read json file
 import json
 
 class historyWindow(QMainWindow):
