@@ -73,7 +73,7 @@ class editIncomeWindow(QMainWindow):
         buttonCard is the card to hold all the buttons of options which can be used to manipulate the transactions.
         
         The backButton allows the user to go back to the Homepage.
-        It also has the shortcut key of Crtl + W, doing either of these will let the user get to the Homepage.
+        It also has the shortcut key of Ctrl + W, doing either of these will let the user get to the Homepage.
         '''
 
         buttonCard = QFrame()
@@ -100,7 +100,7 @@ class editIncomeWindow(QMainWindow):
         backButton.clicked.connect(self.goHome_Signal.emit)
 
         '''
-        deleteButton is a button that has the function linked to delete trasanctions that are selected.
+        deleteButton is a button that has the function linked to delete transactions that are selected.
         '''
 
         deleteButton = QPushButton(QIcon('img/bin_icon.png'), 'Delete')
@@ -443,13 +443,13 @@ class editIncomeWindow(QMainWindow):
             self.deleteSelectedIDs()
 
         elif function == 'chDesc':
-            newDecription = self.textEntry.text()
-            db.changeDecription(self.selectedIDs, newDecription)
+            newDescription = self.textEntry.text()
+            db.changeDecription(self.selectedIDs, newDescription)
             self.transactionSort(self.sortToSaver)
             self.deleteSelectedIDs()
 
     def deleteSelectedIDs(self):
         '''
-        FUnction to delete the selected transactions.
+        Function to delete the selected transactions.
         '''
         self.selectedIDs.clear()
