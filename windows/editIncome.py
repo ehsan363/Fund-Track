@@ -57,7 +57,6 @@ class editIncomeWindow(QMainWindow):
         '''
         headingLabel is label for to display the heading of the window
         '''
-
         # UI elements
         # Heading
         self.headingLabel = QLabel("""Edit Income
@@ -103,7 +102,6 @@ class editIncomeWindow(QMainWindow):
         The backButton allows the user to go back to the Homepage.
         It also has the shortcut key of Ctrl + W, doing either of these will let the user get to the Homepage.
         '''
-
         buttonCard = QFrame()
         buttonCardLayout = QHBoxLayout(buttonCard)
 
@@ -130,7 +128,6 @@ class editIncomeWindow(QMainWindow):
         '''
         deleteButton is a button that has the function linked to delete transactions that are selected.
         '''
-
         deleteButton = QPushButton(QIcon('img/bin_icon.png'), 'Delete')
         deleteButton.setIconSize(QSize(18, 18))
         deleteButton.setShortcut(QKeySequence('Ctrl+D'))
@@ -347,7 +344,7 @@ class editIncomeWindow(QMainWindow):
         pageLayout.addStretch()
 
         centralWidget.setStyleSheet(f'background-color: {themePrimary}; color: {font_color};')
-        self.setCentralWidget(centralWidget)  # <-- Stuff into Central Widget
+        self.setCentralWidget(centralWidget)
 
     def transactionSort(self, sortedTo):
         '''
