@@ -28,7 +28,7 @@ class settingsWindow(QMainWindow):
         self.resize(1920, 1080)
         self.setMinimumSize(1170, 650)
 
-        self.setWindowIcon(QIcon('img/iconOrange#141414bgR.png'))
+        self.setWindowIcon(QIcon('img/iconOrange141414bgR.png'))
 
         # Font elements
         font = QFont()

@@ -41,7 +41,7 @@ class MainWindow(QMainWindow):
         # Window settings
         self.resize(1920, 1080)
 
-        self.setWindowIcon(QIcon('img/iconOrange#141414bgR.png'))
+        self.setWindowIcon(QIcon('img/iconOrange141414bgR.png'))
         self.setStyleSheet('background-color: #141414;')
 
         # Font elements

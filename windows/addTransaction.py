@@ -17,7 +17,7 @@ class addTransactionWindow(QMainWindow):
         self.setMinimumSize(1170, 650)
 
         # Window icon
-        self.setWindowIcon(QIcon('img/iconOrange#141414bgR.png'))
+        self.setWindowIcon(QIcon('img/iconOrange141414bgR.png'))
 
         # Font elements
         font = QFont()

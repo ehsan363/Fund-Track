@@ -18,7 +18,7 @@ class editExpenseWindow(QMainWindow):
         self.setMinimumSize(1170, 650)
 
         # Window icon
-        self.setWindowIcon(QIcon('img/iconOrange#141414bgR.png'))
+        self.setWindowIcon(QIcon('img/iconOrange141414bgR.png'))
 
         # Font elements
         font = QFont()
@@ -336,9 +336,7 @@ class editExpenseWindow(QMainWindow):
                 transactionID = checkbox.property('transaction_id')
                 self.selectedIDs.append(transactionID)
         if not self.selectedIDs:
-            print('none selected')
             return
-        print('DONE')
         db = DBmanager()
         if function == 'del':
             db.deleteSelected(self.selectedIDs)
