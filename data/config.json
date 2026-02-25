@@ -15,6 +15,38 @@
             "LastGenDate": "2026-01"
         }
     ],
+    "Themes": [
+        {
+            "Dark": {
+                "Primary": "#141414",
+                "Secondary":  "222222",
+                "Button": "#ed7521"
+            },
+            "Light": {
+                "Primary": "#dbdbdb",
+                "Secondary": "#616060",
+                "Button": {
+                    "bgcolor": "#0a63c9",
+                    "hoverbgcolor": "#236ec4",
+                    "clickbgcolor": "#0974ed",
+                    "color": "#000000"
+                },
+                "Entry": {
+                    "bgcolor": "#616060",
+                    "color": "#000000",
+                    "bordercolor": "#0a63c9"
+                },
+                "Sortmenu": {
+                    "bgcolor": "#0a63c9",
+                    "border": "#000000"
+                },
+                "Font": {
+                    "font-color": "#000000"
+                }
+            }
+        }
+    ],
+    "CurrentTheme": "Light",
     "CurrencySuffix": "$",
     "Version": "1.0"
 }
