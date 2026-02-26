@@ -53,7 +53,6 @@ class AppController:
             2, Showing the Homepage again
             3, Refreshing the homepage
         '''
-        print('hello')
         if self.sub_window:
             self.sub_window.close()
 
