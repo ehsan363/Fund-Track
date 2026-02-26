@@ -271,9 +271,26 @@ class editIncomeWindow(QMainWindow):
         self.textEntry = QLineEdit()
         self.textEntry.setPlaceholderText('Amount: Number | Date: DD-MM-YYYY ')
         self.textEntry.setAlignment(Qt.AlignLeft)
-        self.textEntry.setStyleSheet('''
-            font-size: 18px;
-            font-family: Adwaita mono;''')
+        self.textEntry.setStyleSheet(f'''
+            QLineEdit {{
+                font-size: 18px;
+                font-family: Adwaita mono;
+                color: {font_color};
+                background-color:{entryBgColor};
+                padding-top: 7px;
+                padding-bottom: 7px;
+                border-radius: 5px;
+                border: 2px solid {entryColor}
+            }}
+            
+            QLineEdit:focus {{
+                border: 2px solid {entryBorderColor}
+            }}
+            
+            QLineEdit:hover {{
+                border: 2px solid {entryBorderColor}
+            }}
+            ''')
 
         buttonCardLayout.addWidget(deleteButton)
         buttonCardLayout.addWidget(changeAmountButton)
@@ -366,6 +383,9 @@ class editIncomeWindow(QMainWindow):
                 buttonConfig = i[currentTheme]["Button"]
                 checkedBgColor = buttonConfig["bgcolor"]
 
+                entryConfig = i[currentTheme]["Entry"]
+                entryConfigBgColor = entryConfig["bgcolor"]
+
             currencySuffix = f' {data["CurrencySuffix"]}'
         db = DBmanager()
         data = db.editingTransactionHistory(sortedTo, 'income')
@@ -383,6 +403,7 @@ class editIncomeWindow(QMainWindow):
 {i['description']}                                                                                     {i['created_at']:>20}''')
             label.setStyleSheet(f'''
                 font-size: 24px;
+                background-color: {entryConfigBgColor};
                 border: 3px solid {transactionColorCode};
                 border-radius: 15px;
                 color: {font_color};''')

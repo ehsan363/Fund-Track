@@ -130,7 +130,7 @@ class userWindow(QMainWindow):
         self.budgetEntry.setSuffix(currencySuffix)
         self.budgetEntry.setStyleSheet(f'''
             QDoubleSpinBox {{
-                background-color: {themeSecondary};
+                background-color: {entryBgColor};
                 color: {entryColor};
                 border: 2px solid {font_color};
                 border-radius: 8px;
