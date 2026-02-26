@@ -98,7 +98,7 @@ class editIncomeWindow(QMainWindow):
 
         '''
         buttonCard is the card to hold all the buttons of options which can be used to manipulate the transactions.
-        
+
         The backButton allows the user to go back to the Homepage.
         It also has the shortcut key of Ctrl + W, doing either of these will let the user get to the Homepage.
         '''
@@ -434,7 +434,8 @@ class editIncomeWindow(QMainWindow):
                     border: 2px solid {font_color};
                     border-radius: 4px;
                     background-color: {checkedBgColor};
-                }}''')
+                }}
+                ''')
             selectCheckbox.setProperty('transaction_id', i['id'])
             self.transactionCheckBoxes.append(selectCheckbox)
             self.contentLayout.insertWidget(self.contentLayout.count() - 1, selectCheckbox)
