@@ -24,7 +24,7 @@
             },
             "Light": {
                 "Primary": "#dbdbdb",
-                "Secondary": "#616060",
+                "Secondary": "#999696",
                 "Button": {
                     "bgcolor": "#0a63c9",
                     "hoverbgcolor": "#236ec4",
