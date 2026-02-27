@@ -54,7 +54,7 @@ class historyWindow(QMainWindow):
         
         backButton is the button on the top part of the window that allows user to return to the HomePage.
         
-        scroll is the varibale which allows the user to scroll through the page of recent transactions.
+        scroll is the variable which allows the user to scroll through the page of recent transactions.
         '''
         # Heading
         self.headingLabel = QLabel("""History
@@ -121,7 +121,7 @@ class historyWindow(QMainWindow):
         # Sort Feature
         '''
         sortMenu is the menu in which all the options in which you can sort the transaction are.
-        trasanctionSort, the function will be called whenever the option inside the menu is changed.
+        transactionSort, the function will be called whenever the option inside the menu is changed.
         '''
         self.sortMenu = QComboBox()
         self.sortMenu.setStyleSheet(f"""
@@ -158,7 +158,7 @@ class historyWindow(QMainWindow):
         pageLayout.addStretch()
 
         centralWidget.setStyleSheet(f'background-color: {themePrimary}; color: {font_color};')
-        self.setCentralWidget(centralWidget)  # <-- Stuff into Central Widget
+        self.setCentralWidget(centralWidget)
 
     def transactionSort(self, sortedTo):
         '''
@@ -168,7 +168,7 @@ class historyWindow(QMainWindow):
 
         - First clears out layout with another function imported.
         - Fetches the suffix from the JSON file.
-        - Converts the date format, selects border color accoridng to the transaction type and
+        - Converts the date format, selects border color according to the transaction type and
           creates Label with content.
         '''
         clear_layout(self.contentLayout)
