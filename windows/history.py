@@ -66,23 +66,46 @@ class historyWindow(QMainWindow):
             padding-top: 15px;
             padding-left: 10px;""")
 
+        # Theme
+        with open('data/config.json', 'r') as f:
+            data = json.load(f)
+            currentTheme = data['CurrentTheme']
+            for i in data['Themes']:
+                themePrimary = i[currentTheme]['Primary']
+                themeSecondary = i[currentTheme]['Secondary']
+
+                buttonConfig = i[currentTheme]['Button']
+                sortConfig = i[currentTheme]["Sortmenu"]
+                fontConfig = i[currentTheme]["Font"]
+
+                font_color = fontConfig['font-color']
+
+                buttonBgColor = buttonConfig['bgcolor']
+                buttonHoverBgColor = buttonConfig['hoverbgcolor']
+                buttonClickedBgColor = buttonConfig['clickbgcolor']
+                buttonColor = buttonConfig['color']
+
+                sortNormalBorder = sortConfig["border"]
+                sortNormalBgColor = sortConfig["bgcolor"]
+
+
         backButton = QPushButton(QIcon('img/back_icon.png'), 'Back')
         backButton.setShortcut(QKeySequence('Ctrl+W'))
-        backButton.setStyleSheet('''
-            QPushButton {
-                background-color: #ed7521;
-                color: black;
+        backButton.setStyleSheet(f'''
+            QPushButton {{
+                background-color: {buttonBgColor};
+                color: {buttonColor};
                 padding: 10px 20px 10px 20px;
                 border-radius: 8px;
                 font-size: 16px;
                 text-align: left;
-            }
-            QPushButton:hover {
-                background-color: #f08337;
-            }
-            QPushButton:pressed {
-                background-color: #ed6709;
-            }
+            }}
+            QPushButton:hover {{
+                background-color: {buttonHoverBgColor};
+            }}
+            QPushButton:pressed {{
+                background-color: {buttonClickedBgColor};
+            }}
         ''')
         backButton.clicked.connect(self.goHome_Signal.emit)
 
@@ -101,29 +124,19 @@ class historyWindow(QMainWindow):
         trasanctionSort, the function will be called whenever the option inside the menu is changed.
         '''
         self.sortMenu = QComboBox()
-        self.sortMenu.setStyleSheet("""
-            QComboBox {
+        self.sortMenu.setStyleSheet(f"""
+            QComboBox {{
                 font-size: 18px;
                 padding: 8px;
                 border-radius: 5px;
-                border: 1px solid #404040;
-                background-color: #222222;
+                border: 2px solid {sortNormalBorder};
+                background-color: {sortNormalBgColor};
                 font-family: Adwaita mono;
-            }
+            }}
             
-            QComboBox QAbstractItemView::item:hover {
-                background-color: #404040;
-                color: #ed7521;
-            }
-            
-            QComboBox QAbstractItemView::item:selected {
-                background-color: #222222;
-                color: #ed7521;
-            }
-            
-            QComboBox:focus {
-                border: 1px solid #ed7521;
-            }""")
+            QComboBox:focus {{
+                border: 2px solid {font_color};
+            }}""")
         self.sortMenu.addItems(
             ['Date DESC',
              'Date ASC',
@@ -144,7 +157,7 @@ class historyWindow(QMainWindow):
         pageLayout.addWidget(scroll, 1)
         pageLayout.addStretch()
 
-        centralWidget.setStyleSheet('background-color: #141414; color: #ed7521;')
+        centralWidget.setStyleSheet(f'background-color: {themePrimary}; color: {font_color};')
         self.setCentralWidget(centralWidget)  # <-- Stuff into Central Widget
 
     def transactionSort(self, sortedTo):
@@ -166,6 +179,15 @@ class historyWindow(QMainWindow):
             read = json.load(f)
             currencySuffix = f' {read["CurrencySuffix"]}'
 
+            currentTheme = read["CurrentTheme"]
+            for i in read['Themes']:
+                fontConfig = i[currentTheme]['Font']
+                font_color = fontConfig['font-color']
+
+                entryConfig = i[currentTheme]['Entry']
+                entryConfigBgColor = entryConfig["bgcolor"]
+
+
         for i in data:
             year, month, day = dateExtraction(i['date'])
             fullDate = day+'-'+month+'-'+year
@@ -180,8 +202,9 @@ class historyWindow(QMainWindow):
 {i['description']}                                                                                     {i['created_at']:>20}''')
             label.setStyleSheet(f'''
                 font-size: 24px;
+                background-color: {entryConfigBgColor};
                 border: 3px solid {transactionColorCode};
                 border-radius: 15px;
-                color: #e8e8e8;''')
+                color: {font_color};''')
 
             self.contentLayout.addWidget(label)
