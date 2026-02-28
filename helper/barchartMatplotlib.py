@@ -1,6 +1,7 @@
 from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
 from data.database import DBmanager
+import json
 
 def initiation():
     figure = Figure()  # Blank canvas
@@ -8,6 +9,17 @@ def initiation():
     return figure, canvas
 
 def plot_bar_chart(figure, canvas):
+    # Theme data
+    with open('data/config.json', 'r') as f:
+        data = json.load(f)
+        currentTheme = data['CurrentTheme']
+
+        for i in data['Themes']:
+            themeSecondary = i[currentTheme]['Secondary']
+
+            fontConfig = i[currentTheme]['Font']
+            font_color = fontConfig['font-color']
+
     # Values for the barchart
     db = DBmanager()
     income = {
@@ -44,17 +56,28 @@ def plot_bar_chart(figure, canvas):
 
     plt.bar(income.keys(), income.values(), color = '#3e9c35', width = 0.8)
     plt.bar(expense.keys(), expense.values(), color = '#c71413', width = 0.8)
-    plt.tick_params(axis='x', colors='white')
-    plt.tick_params(axis='y', colors='white')
+    plt.tick_params(axis='x', colors=font_color)
+    plt.tick_params(axis='y', colors=font_color)
 
     # UI editing
     plt.get_yaxis().get_major_formatter().set_scientific(False) # Scientific notation gone
-    figure.patch.set_facecolor("#222222") # Bg color changed (barchart surround area)
-    plt.set_facecolor("#222222") # (barchart area)
+    figure.patch.set_facecolor(themeSecondary) # Bg color changed (barchart surround area)
+    plt.set_facecolor(themeSecondary) # (barchart area)
     canvas.draw()
     return plt
 
 def update_bar_chart(plt, figure, canvas):
+    # Theme data
+    with open('data/config.json', 'r') as f:
+        data = json.load(f)
+        currentTheme = data['CurrentTheme']
+
+        for i in data['Themes']:
+            themeSecondary = i[currentTheme]['Secondary']
+
+            fontConfig = i[currentTheme]['Font']
+            font_color = fontConfig['font-color']
+
     plt.clear()
     db = DBmanager()
     income = {
@@ -87,11 +110,11 @@ def update_bar_chart(plt, figure, canvas):
     }
     plt.bar(income.keys(), income.values(), color='#3e9c35', width=0.8)
     plt.bar(expense.keys(), expense.values(), color='#c71413', width=0.8)
-    plt.tick_params(axis='x', colors='white')
-    plt.tick_params(axis='y', colors='white')
+    plt.tick_params(axis='x', colors=font_color)
+    plt.tick_params(axis='y', colors=font_color)
 
     # UI editing
     plt.get_yaxis().get_major_formatter().set_scientific(False)  # Scientific notation gone
-    figure.patch.set_facecolor("#222222")  # Bg color changed (barchart surround area)
-    plt.set_facecolor("#222222")  # (barchart area)
+    figure.patch.set_facecolor(themeSecondary)  # Bg color changed (barchart surround area)
+    plt.set_facecolor(themeSecondary)  # (barchart area)
     canvas.draw_idle()
