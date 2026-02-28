@@ -83,23 +83,10 @@ class MainWindow(QMainWindow):
                 themeSecondary = i[currentTheme]['Secondary']
 
                 buttonConfig = i[currentTheme]['Button']
-                entryConfig = i[currentTheme]['Entry']
-                fontConfig = i[currentTheme]["Font"]
-                sortConfig = i[currentTheme]["Sortmenu"]
-
                 buttonBgColor = buttonConfig['bgcolor']
-                buttonHoverBgColor = buttonConfig['hoverbgcolor']
-                buttonClickedBgColor = buttonConfig['clickbgcolor']
-                buttonColor = buttonConfig['color']
 
-                entryBgColor = entryConfig['bgcolor']
-                entryColor = entryConfig['color']
-                entryBorderColor = entryConfig['bordercolor']
-
+                fontConfig = i[currentTheme]["Font"]
                 font_color = fontConfig['font-color']
-
-                sortNormalBorder = sortConfig["border"]
-                sortNormalBgColor = sortConfig["bgcolor"]
 
 
         # Toolbar options
