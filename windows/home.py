@@ -17,6 +17,9 @@ from data.database import DBmanager
 from helper.barchartMatplotlib import initiation, plot_bar_chart
 from helper.HPrefresher import summaryCardRefresher, transactionHistoryRefresher, greetingRefresh, barchartRefresher
 
+# json to write and read json files
+import json
+
 class MainWindow(QMainWindow):
     '''
     Controls all the GUI elements and functions of the homepage.
@@ -42,7 +45,6 @@ class MainWindow(QMainWindow):
         self.resize(1920, 1080)
 
         self.setWindowIcon(QIcon('img/iconOrange141414bgR.png'))
-        self.setStyleSheet('background-color: #141414;')
 
         # Font elements
         font = QFont()
@@ -72,16 +74,45 @@ class MainWindow(QMainWindow):
         bottomRow.setSpacing(210)
 
         # Create UI elements
+        # Theme
+        with open('data/config.json', 'r') as f:
+            data = json.load(f)
+            currentTheme = data['CurrentTheme']
+            for i in data['Themes']:
+                themePrimary = i[currentTheme]['Primary']
+                themeSecondary = i[currentTheme]['Secondary']
+
+                buttonConfig = i[currentTheme]['Button']
+                entryConfig = i[currentTheme]['Entry']
+                fontConfig = i[currentTheme]["Font"]
+                sortConfig = i[currentTheme]["Sortmenu"]
+
+                buttonBgColor = buttonConfig['bgcolor']
+                buttonHoverBgColor = buttonConfig['hoverbgcolor']
+                buttonClickedBgColor = buttonConfig['clickbgcolor']
+                buttonColor = buttonConfig['color']
+
+                entryBgColor = entryConfig['bgcolor']
+                entryColor = entryConfig['color']
+                entryBorderColor = entryConfig['bordercolor']
+
+                font_color = fontConfig['font-color']
+
+                sortNormalBorder = sortConfig["border"]
+                sortNormalBgColor = sortConfig["bgcolor"]
+
+
         # Toolbar options
         toolbar = QToolBar("Main Toolbar", self)
         self.addToolBar(toolbar)
         toolbar.setMovable(False)
-        toolbar.setStyleSheet('''
-            Background-color: #ed7521;
+        toolbar.setStyleSheet(f'''
+            Background-color: {buttonBgColor};
             font-size: 20px;
             border-radius: 15px;
             margin: 5px;
-            padding-top: 5px;''')
+            padding-top: 5px;
+        ''')
         toolbar.setToolButtonStyle(Qt.ToolButtonTextUnderIcon)
 
         '''
@@ -136,7 +167,8 @@ class MainWindow(QMainWindow):
             font-size: 36px;
             font-family: DejaVu Sans Mono;
             padding-top: 15px;
-            padding-left: 10px;""")
+            padding-left: 10px;
+        """)
 
         # Top row
         '''
@@ -149,22 +181,24 @@ class MainWindow(QMainWindow):
         '''
         summaryCard = QFrame() # Summary card
         summaryCard.setFixedWidth(450)
-        summaryCard.setStyleSheet("""
-            background-color: #222222;
+        summaryCard.setStyleSheet(f"""
+            background-color: {themeSecondary};
             font-family: Noto Sans Mono Thin;
             font-weight: bold;
             padding: 10px;
             border-radius: 20px;
-            margin-left: 20px;""")
+            margin-left: 20px;
+        """)
 
         self.summaryLabel = QLabel('Summary')
-        self.summaryLabel.setStyleSheet("""
+        self.summaryLabel.setStyleSheet(f"""
             font-size: 28px;
-            color: White;
+            color: {font_color};
             font-weight: bold;
             margin-left: 30px;
             padding-top: 5px;
-            margin-top: 20px;""")
+            margin-top: 20px;
+        """)
 
         self.budgetLabel = QLabel()
         self.budgetLabel.setAlignment(Qt.AlignTop)
@@ -181,11 +215,11 @@ class MainWindow(QMainWindow):
         greetingCard = QFrame()
         greetingCard.setFixedWidth(1050)
         greetingCard.setFixedHeight(100)
-        greetingCard.setStyleSheet('''
+        greetingCard.setStyleSheet(f'''
             font-family: Caladea;
             font-weight: bold;
-            background-color: #222222;
-            color: White;
+            background-color: {themeSecondary};
+            color: {font_color};
             font-size: 26px;
             border-radius: 15px;''')
 
@@ -210,16 +244,17 @@ class MainWindow(QMainWindow):
         '''
         historyCard = QFrame()
         historyCard.setFixedWidth(900)
-        historyCard.setStyleSheet('''
+        historyCard.setStyleSheet(f'''
             font-size: 22px;
-            color: White;
-            background-color: #222222;
+            color: {font_color};
+            background-color: {themeSecondary};
             border-radius: 15px;
             margin-left: 20px;
             font-family: Noto Sans Mono Thin;
             font-weight: bold;
             padding-bottom: 10px;
-            padding-right: 10px;''')
+            padding-right: 10px;
+        ''')
 
         self.historyLabel = QLabel('Transaction History')
         self.historyLabel.setStyleSheet('padding-top: 10px;')
@@ -230,10 +265,11 @@ class MainWindow(QMainWindow):
         # Bar chart with Matplotlib
         barCard = QFrame()
         barCard.setFixedWidth(750)
-        barCard.setStyleSheet('''
-            background-color: #222222;
-            border: 1px solid #222222;
-            border-radius: 20px;''')
+        barCard.setStyleSheet(f'''
+            background-color: {themeSecondary};
+            border: 2px solid {themeSecondary};
+            border-radius: 20px;
+        ''')
 
 
         self.figure, self.canvas = initiation()
@@ -253,7 +289,7 @@ class MainWindow(QMainWindow):
 
         centralWidget = QWidget()
         centralWidget.setLayout(pageLayout)
-        centralWidget.setStyleSheet('background-color: #141414; color: #ed7521;')
+        centralWidget.setStyleSheet(f'background-color: {themePrimary}; color: {font_color};')
         self.setCentralWidget(centralWidget)
 
         self.refresh()
