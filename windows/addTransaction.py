@@ -55,23 +55,51 @@ class addTransactionWindow(QMainWindow):
             padding-top: 15px;
             padding-left: 10px;""")
 
+        # Theme
+        with open('data/config.json', 'r') as f:
+            data = json.load(f)
+            currentTheme = data['CurrentTheme']
+            for i in data['Themes']:
+                themePrimary = i[currentTheme]['Primary']
+                themeSecondary = i[currentTheme]['Secondary']
+
+                buttonConfig = i[currentTheme]['Button']
+                entryConfig = i[currentTheme]['Entry']
+                fontConfig = i[currentTheme]["Font"]
+                sortConfig = i[currentTheme]["Sortmenu"]
+
+                buttonBgColor = buttonConfig['bgcolor']
+                buttonHoverBgColor = buttonConfig['hoverbgcolor']
+                buttonClickedBgColor = buttonConfig['clickbgcolor']
+                buttonColor = buttonConfig['color']
+
+                entryBgColor = entryConfig['bgcolor']
+                entryColor = entryConfig['color']
+                entryBorderColor = entryConfig['bordercolor']
+
+                font_color = fontConfig['font-color']
+
+                sortNormalBorder = sortConfig["border"]
+                sortNormalBgColor = sortConfig["bgcolor"]
+
+
         backButton = QPushButton(QIcon('img/back_icon.png'),'Back')
         backButton.setShortcut(QKeySequence('Ctrl+W'))
-        backButton.setStyleSheet('''
-        QPushButton {
-            background-color: #ed7521;
-            color: black;
-            padding: 10px 20px 10px 20px;
-            border-radius: 8px;
-            font-size: 16px;
-            text-align: left;
-        }
-        QPushButton:hover {
-            background-color: #f08337;
-        }
-        QPushButton:pressed {
-            background-color: #ed6709;
-        }
+        backButton.setStyleSheet(f'''
+            QPushButton {{
+                background-color: {buttonBgColor};
+                color: {font_color};
+                padding: 10px 20px 10px 20px;
+                border-radius: 8px;
+                font-size: 16px;
+                text-align: left;
+            }}
+            QPushButton:hover {{
+                background-color: {buttonHoverBgColor};
+            }}
+            QPushButton:pressed {{
+                background-color: {buttonClickedBgColor};
+            }}
         ''')
         backButton.clicked.connect(self.goHome_Signal.emit)
 
@@ -80,7 +108,8 @@ class addTransactionWindow(QMainWindow):
         row1Card.setStyleSheet('''
             font-size: 18px;
             padding-left: 15px;
-            padding-top: 10px;''')
+            padding-top: 10px;
+        ''')
 
         self.dateEntry = QDateEdit()
         self.dateEntry.setDate(todayDate())
@@ -89,48 +118,49 @@ class addTransactionWindow(QMainWindow):
         self.dateEntry.setFixedWidth(150)
         calendar = self.dateEntry.calendarWidget()
         calendar.setMinimumSize(360, 300)
-        self.dateEntry.setStyleSheet("""
-        QDateEdit {
-            background-color: #222;
-            color: #eee;
-            border: 1px solid #444;
-            border-radius: 8px;
-            padding: 6px 10px;
-            font-size: 14px;
-        }
-        
-        QDateEdit:hover {
-            border: 1px solid #666;
-        }
-        
-        QDateEdit:focus {
-            border: 1px solid #ed7521;
-        }
-        
-        QDateEdit::drop-down {
-            subcontrol-origin: padding;
-            subcontrol-position: top right;
-            width: 24px;
-            border-left: 1px solid #444;
-        }
-        
-        QDateEdit::down-arrow {
-            image: url(img/down_icon.png);
-            width: 14px;
-            height: 14px;
-        }
-        QCalendarWidget QToolButton#qt_calendar_prevmonth {
-            qproperty-icon: url(img/chevron-left.png);
-            qproperty-iconSize: 16px;
-        }
-        
-        QCalendarWidget QToolButton#qt_calendar_nextmonth {
-            qproperty-icon: url(img/chevron-right.png);
-            qproperty-iconSize: 16px;
-        }
-        QCalendarWidget QAbstractItemView {
-           font-size: 16px;
-        }""")
+        self.dateEntry.setStyleSheet(f"""
+            QDateEdit {{
+                background-color: {entryBgColor};
+                color: {font_color};
+                border: 2px solid {entryColor};
+                border-radius: 8px;
+                padding: 6px 10px;
+                font-size: 14px;
+            }}
+            
+            QDateEdit:hover {{
+                border: 2px solid {entryBorderColor};
+            }}
+            
+            QDateEdit:focus {{
+                border: 2px solid {entryBorderColor};
+            }}
+            
+            QDateEdit::drop-down {{
+                subcontrol-origin: padding;
+                subcontrol-position: top right;
+                width: 24px;
+                border-left: 2px solid {entryBorderColor};
+            }}
+            
+            QDateEdit::down-arrow {{
+                image: url(themes/{currentTheme}/down_icon.png);
+                width: 14px;
+                height: 14px;
+            }}
+            QCalendarWidget QToolButton#qt_calendar_prevmonth {{
+                qproperty-icon: url(themes/{currentTheme}/chevron-left.png);
+                qproperty-iconSize: 16px;
+            }}
+            
+            QCalendarWidget QToolButton#qt_calendar_nextmonth {{
+                qproperty-icon: url(themes/{currentTheme}/chevron-right.png);
+                qproperty-iconSize: 16px;
+            }}
+            QCalendarWidget QAbstractItemView {{
+               font-size: 16px;
+            }}
+        """)
 
         row1CardLayout = QHBoxLayout(row1Card)
         row1CardLayout.addWidget(self.dateEntry)
@@ -150,56 +180,48 @@ class addTransactionWindow(QMainWindow):
             currencySuffix = f' {data["CurrencySuffix"]}'
 
         self.amountEntry.setSuffix(currencySuffix)
-        self.amountEntry.setStyleSheet('''
-            QDoubleSpinBox {
-                background-color: #222;
-                color: #eee;
-                border: 1px solid #444;
+        self.amountEntry.setStyleSheet(f'''
+            QDoubleSpinBox {{
+                background-color: {entryBgColor};
+                color: {entryColor};
+                border: 2px solid {entryColor};
                 border-radius: 8px;
                 padding: 6px 10px;
                 font-size: 16px;
-            }
+            }}
             
-            QDoubleSpinBox:hover {
-                border: 1px solid #666;
-            }
+            QDoubleSpinBox:hover {{
+                border: 2px solid {entryBorderColor};
+            }}
             
-            QDoubleSpinBox:focus {
-                border: 1px solid #ed7521;
-            }
+            QDoubleSpinBox:focus {{
+                border: 2px solid {entryBorderColor};
+            }}
             
             QDoubleSpinBox::up-button,
-            QDoubleSpinBox::down-button {
+            QDoubleSpinBox::down-button {{
                 width: 0px;
                 border: none;
-            }''')
+            }}''')
 
         # Type
         self.typeEntry = QComboBox()
         self.typeEntry.addItems(['Income', 'Expense'])
-        self.typeEntry.setStyleSheet("""
-            QComboBox {
+        self.typeEntry.setStyleSheet(f"""
+            QComboBox {{
                 font-size: 18px;
                 padding: 8px;
                 border-radius: 5px;
-                border: 1px solid #404040;
-                background-color: #222222;
+                border: 2px solid {sortNormalBorder};
+                background-color: {buttonBgColor};
+                color: {font_color};
                 font-family: Adwaita mono;
-            }
+            }}
             
-            QComboBox QAbstractItemView::item:hover {
-                background-color: #404040;
-                color: #ed7521;
-            }
-            
-            QComboBox QAbstractItemView::item:selected {
-                background-color: #222222;
-                color: #ed7521;
-            }
-            
-            QComboBox:focus {
-                border: 1px solid #ed7521;
-            }""")
+            QComboBox:focus {{
+                border: 2px solid {entryBorderColor};
+            }}
+        """)
 
         row2CardLayout = QHBoxLayout(row2Card)
         row2CardLayout.setSpacing(40)
@@ -210,58 +232,45 @@ class addTransactionWindow(QMainWindow):
         row3Card = QFrame()
         row3Card.setStyleSheet('''
             font-size: 18px;
-            padding-left: 15px;''')
+            padding-left: 15px;
+        ''')
 
         self.categoryEntry = QComboBox()
         # Should change this to be extracted from the file and the selected "type"
-        self.categoryEntry.setStyleSheet("""
-            QComboBox {
+        self.categoryEntry.setStyleSheet(f"""
+            QComboBox {{
                 font-size: 18px;
                 padding: 8px;
                 border-radius: 5px;
-                border: 1px solid #404040;
-                background-color: #222222;
+                border: 2px solid {sortNormalBorder};
+                background-color: {buttonBgColor};
+                color: {font_color};
                 font-family: Adwaita mono;
-            }
+            }}
             
-            QComboBox QAbstractItemView::item:hover {
-                background-color: #404040;
-                color: #ed7521;
-            }
-            
-            QComboBox QAbstractItemView::item:selected {
-                background-color: #222222;
-                color: #ed7521;
-            }
-            QComboBox:focus {
-                border: 1px solid #ed7521;
-            }""")
+            QComboBox:focus {{
+                border: 2px solid {entryBorderColor};
+            }}
+        """)
 
         # Account
         self.accountEntry = QComboBox()
         self.accountEntry.addItems(["Cash", "Bank", "Credit Card"])
-        self.accountEntry.setStyleSheet("""
-            QComboBox {
+        self.accountEntry.setStyleSheet(f"""
+            QComboBox {{
                 font-size: 18px;
                 padding: 8px;
                 border-radius: 5px;
-                border: 1px solid #404040;
-                background-color: #222222;
+                border: 2px solid {sortNormalBorder};
+                background-color: {buttonBgColor};
+                color: {font_color};
                 font-family: Adwaita mono;
-            }
+            }}
             
-            QComboBox QAbstractItemView::item:hover {
-                background-color: #404040;
-                color: #ed7521;
-            }
-            
-            QComboBox QAbstractItemView::item:selected {
-                background-color: #222222;
-                color: #ed7521;
-            }
-            QComboBox:focus {
-                border: 1px solid #ed7521;
-            }""")
+            QComboBox:focus {{
+                border: 2px solid {entryBorderColor};
+            }}
+        """)
 
         row3CardLayout = QHBoxLayout(row3Card)
         row3CardLayout.setSpacing(40)
@@ -277,18 +286,21 @@ class addTransactionWindow(QMainWindow):
             font-size: 18px;
             padding-left: 10px;
             padding-top: 5px;
-            font-family: Adwaita mono;''')
+            font-family: Adwaita mono;
+        ''')
 
         self.descriptionLabel = QLabel('Description')
         self.descriptionLabel.setStyleSheet('''
-            font-size: 18px;''')
+            font-size: 18px;
+        ''')
 
         self.descriptionEntry = QTextEdit()
-        self.descriptionEntry.setStyleSheet('''
+        self.descriptionEntry.setStyleSheet(f'''
             font-size: 18px;
-            background-color: #222222;
+            background-color: {themeSecondary};
             border-radius: 10px;
-            border: 2px solid #ed7521;''')
+            border: 2px solid {entryBorderColor};
+        ''')
 
         row4CardLayout = QVBoxLayout(row4Card)
         row4CardLayout.addWidget(self.descriptionLabel)
@@ -298,46 +310,49 @@ class addTransactionWindow(QMainWindow):
         self.submitBtn = QPushButton('Enter')
         self.submitBtn.setShortcut(QKeySequence('Alt+A'))
         self.submitBtn.clicked.connect(self.enterDate)
-        self.submitBtn.setStyleSheet('''
-            QPushButton {
-                background-color: #ed7521;
-                color: black;
+        self.submitBtn.setStyleSheet(f'''
+            QPushButton {{
+                background-color: {buttonBgColor};
+                color: {font_color};
                 padding: 10px 20px 10px 20px;
                 border-radius: 8px;
                 font-size: 18px;
-                text-align: center;
-                
-            }
-            QPushButton:hover {
-                background-color: #f08337;
-            }
-            QPushButton:pressed {
-                background-color: #ed6709;
-            }
+                text-align: center;  
+            }}
+            
+            QPushButton:hover {{
+                background-color: {buttonHoverBgColor};
+            }}
+            
+            QPushButton:pressed {{
+                background-color: {buttonClickedBgColor};
+            }}
         ''')
 
         self.resetCh = QCheckBox('Do not reset')
-        self.resetCh.setStyleSheet('''
-            QCheckBox {
+        self.resetCh.setStyleSheet(f'''
+            QCheckBox {{
                 spacing: 10px;
                 font-size: 14px;
-                color: #ed7521;
+                color: {font_color};
                 font-family: Adwaita mono;
-            }
-            QCheckBox::indicator {
+            }}
+            
+            QCheckBox::indicator {{
                 width: 20px;
                 height: 20px;
-            }
-            QCheckBox::indicator:unchecked {
-                border: 2px solid #888;
-                background: white;
+            }}
+            
+            QCheckBox::indicator:unchecked {{
+                border: 2px solid {sortNormalBorder};
+                background: {themeSecondary};
                 border-radius: 4px;
-            }
-            QCheckBox::indicator:checked {
-                border: 2px solid #ed7521;
+            }}
+            
+            QCheckBox::indicator:checked {{
+                border: 2px solid {entryBorderColor};
                 border-radius: 4px;
-                background-color: #222222;
-            }''')
+            }}''')
 
         row1.addWidget(row1Card)
         row2.addWidget(row2Card)
@@ -358,8 +373,8 @@ class addTransactionWindow(QMainWindow):
 
         centralWidget = QWidget()
         centralWidget.setLayout(pageLayout)
-        centralWidget.setStyleSheet('background-color: #141414; color: #ed7521;')
-        self.setCentralWidget(centralWidget)  # <-- Stuff into Central Widget
+        centralWidget.setStyleSheet(f'background-color: {themePrimary}; color: {font_color};')
+        self.setCentralWidget(centralWidget)
 
     def resetForm(self):
         self.dateEntry.setDate(QDate.currentDate())
