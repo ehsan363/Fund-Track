@@ -19,8 +19,27 @@
         {
             "Dark": {
                 "Primary": "#141414",
-                "Secondary":  "222222",
-                "Button": "#ed7521"
+                "Secondary":  "#222222",
+                "Button": {
+                    "bgcolor": "#ed7521",
+                    "hoverbgcolor": "#f08337",
+                    "clickbgcolor": "#ed6709",
+                    "color": "#000000"
+                },
+                "Entry": {
+                    "bgcolor": "#222222",
+                    "color": "#000000",
+                    "bordercolor": "#ed7521"
+                },
+                "Sortmenu": {
+                    "bgcolor": "#222222",
+                    "border": "#ed7521"
+                },
+                "Font": {
+                    "font-color0": "#ed7521",
+                    "font-color1": "#e8e8e8",
+                    "font-color2": "#000000"
+                }
             },
             "Light": {
                 "Primary": "#dbdbdb",
@@ -37,11 +56,13 @@
                     "bordercolor": "#0a63c9"
                 },
                 "Sortmenu": {
-                    "bgcolor": "#0a63c9",
+                    "bgcolor": "#999696",
                     "border": "#000000"
                 },
                 "Font": {
-                    "font-color": "#000000"
+                    "font-color0": "#0a63c9",
+                    "font-color1": "#000000",
+                    "font-color2": "#e8e8e8"
                 }
             }
         }
