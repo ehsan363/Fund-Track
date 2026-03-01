@@ -18,7 +18,9 @@ def plot_bar_chart(figure, canvas):
             themeSecondary = i[currentTheme]['Secondary']
 
             fontConfig = i[currentTheme]['Font']
-            font_color = fontConfig['font-color']
+
+            font_color0 = fontConfig['font-color0']
+            font_color1 = fontConfig['font-color1']
 
     # Values for the barchart
     db = DBmanager()
@@ -56,8 +58,8 @@ def plot_bar_chart(figure, canvas):
 
     plt.bar(income.keys(), income.values(), color = '#3e9c35', width = 0.8)
     plt.bar(expense.keys(), expense.values(), color = '#c71413', width = 0.8)
-    plt.tick_params(axis='x', colors=font_color)
-    plt.tick_params(axis='y', colors=font_color)
+    plt.tick_params(axis='x', colors=font_color1)
+    plt.tick_params(axis='y', colors=font_color1)
 
     # UI editing
     plt.get_yaxis().get_major_formatter().set_scientific(False) # Scientific notation gone
@@ -76,7 +78,9 @@ def update_bar_chart(plt, figure, canvas):
             themeSecondary = i[currentTheme]['Secondary']
 
             fontConfig = i[currentTheme]['Font']
-            font_color = fontConfig['font-color']
+
+            font_color0 = fontConfig['font-color0']
+            font_color1 = fontConfig['font-color1']
 
     plt.clear()
     db = DBmanager()
@@ -110,8 +114,8 @@ def update_bar_chart(plt, figure, canvas):
     }
     plt.bar(income.keys(), income.values(), color='#3e9c35', width=0.8)
     plt.bar(expense.keys(), expense.values(), color='#c71413', width=0.8)
-    plt.tick_params(axis='x', colors=font_color)
-    plt.tick_params(axis='y', colors=font_color)
+    plt.tick_params(axis='x', colors=font_color1)
+    plt.tick_params(axis='y', colors=font_color1)
 
     # UI editing
     plt.get_yaxis().get_major_formatter().set_scientific(False)  # Scientific notation gone

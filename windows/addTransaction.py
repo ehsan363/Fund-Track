@@ -45,16 +45,6 @@ class addTransactionWindow(QMainWindow):
 
 
         # UI elements
-        # Heading
-        self.headingLabel = QLabel("""Add Transaction
-──────────────────────────────────────────────────────────────────────────────────────────""")
-        self.headingLabel.setAlignment(Qt.AlignLeft)
-        self.headingLabel.setStyleSheet("""
-            font-size: 36px;
-            font-family: DejaVu Sans Mono;
-            padding-top: 15px;
-            padding-left: 10px;""")
-
         # Theme
         with open('data/config.json', 'r') as f:
             data = json.load(f)
@@ -77,22 +67,35 @@ class addTransactionWindow(QMainWindow):
                 entryColor = entryConfig['color']
                 entryBorderColor = entryConfig['bordercolor']
 
-                font_color = fontConfig['font-color']
+                font_color0 = fontConfig['font-color0']
+                font_color1 = fontConfig['font-color1']
+                font_color2 = fontConfig['font-color2']
 
                 sortNormalBorder = sortConfig["border"]
                 sortNormalBgColor = sortConfig["bgcolor"]
 
+        # Heading
+        self.headingLabel = QLabel("""Add Transaction
+──────────────────────────────────────────────────────────────────────────────────────────""")
+        self.headingLabel.setAlignment(Qt.AlignLeft)
+        self.headingLabel.setStyleSheet(f"""
+            font-size: 36px;
+            font-family: DejaVu Sans Mono;
+            padding-top: 15px;
+            padding-left: 10px;
+            color: {font_color0}
+        """)
 
         backButton = QPushButton(QIcon('img/back_icon.png'),'Back')
         backButton.setShortcut(QKeySequence('Ctrl+W'))
         backButton.setStyleSheet(f'''
             QPushButton {{
                 background-color: {buttonBgColor};
-                color: {font_color};
                 padding: 10px 20px 10px 20px;
                 border-radius: 8px;
                 font-size: 16px;
                 text-align: left;
+                color: {buttonColor}
             }}
             QPushButton:hover {{
                 background-color: {buttonHoverBgColor};
@@ -121,7 +124,6 @@ class addTransactionWindow(QMainWindow):
         self.dateEntry.setStyleSheet(f"""
             QDateEdit {{
                 background-color: {entryBgColor};
-                color: {font_color};
                 border: 2px solid {entryColor};
                 border-radius: 8px;
                 padding: 6px 10px;
@@ -182,8 +184,8 @@ class addTransactionWindow(QMainWindow):
         self.amountEntry.setSuffix(currencySuffix)
         self.amountEntry.setStyleSheet(f'''
             QDoubleSpinBox {{
-                background-color: {entryBgColor};
-                color: {entryColor};
+                background-color: {sortNormalBgColor};
+                color: {font_color1};
                 border: 2px solid {entryColor};
                 border-radius: 8px;
                 padding: 6px 10px;
@@ -213,9 +215,13 @@ class addTransactionWindow(QMainWindow):
                 padding: 8px;
                 border-radius: 5px;
                 border: 2px solid {sortNormalBorder};
-                background-color: {buttonBgColor};
-                color: {font_color};
+                background-color: {sortNormalBgColor};
+                color: {font_color0};
                 font-family: Adwaita mono;
+            }}
+            
+            QComboBox:hover {{
+                border: 2px solid {entryBorderColor};
             }}
             
             QComboBox:focus {{
@@ -243,9 +249,13 @@ class addTransactionWindow(QMainWindow):
                 padding: 8px;
                 border-radius: 5px;
                 border: 2px solid {sortNormalBorder};
-                background-color: {buttonBgColor};
-                color: {font_color};
+                background-color: {sortNormalBgColor};
+                color: {font_color0};
                 font-family: Adwaita mono;
+            }}
+            
+            QComboBox:hover {{
+                border: 2px solid {entryBorderColor};
             }}
             
             QComboBox:focus {{
@@ -262,9 +272,13 @@ class addTransactionWindow(QMainWindow):
                 padding: 8px;
                 border-radius: 5px;
                 border: 2px solid {sortNormalBorder};
-                background-color: {buttonBgColor};
-                color: {font_color};
+                background-color: {sortNormalBgColor};
+                color: {font_color0};
                 font-family: Adwaita mono;
+            }}
+            
+            QComboBox:hover {{
+                border: 2px solid {entryBorderColor};
             }}
             
             QComboBox:focus {{
@@ -290,8 +304,9 @@ class addTransactionWindow(QMainWindow):
         ''')
 
         self.descriptionLabel = QLabel('Description')
-        self.descriptionLabel.setStyleSheet('''
+        self.descriptionLabel.setStyleSheet(f'''
             font-size: 18px;
+            color: {font_color0}
         ''')
 
         self.descriptionEntry = QTextEdit()
@@ -313,7 +328,7 @@ class addTransactionWindow(QMainWindow):
         self.submitBtn.setStyleSheet(f'''
             QPushButton {{
                 background-color: {buttonBgColor};
-                color: {font_color};
+                color: {buttonColor};
                 padding: 10px 20px 10px 20px;
                 border-radius: 8px;
                 font-size: 18px;
@@ -334,7 +349,7 @@ class addTransactionWindow(QMainWindow):
             QCheckBox {{
                 spacing: 10px;
                 font-size: 14px;
-                color: {font_color};
+                color: {font_color0};
                 font-family: Adwaita mono;
             }}
             
@@ -373,7 +388,7 @@ class addTransactionWindow(QMainWindow):
 
         centralWidget = QWidget()
         centralWidget.setLayout(pageLayout)
-        centralWidget.setStyleSheet(f'background-color: {themePrimary}; color: {font_color};')
+        centralWidget.setStyleSheet(f'background-color: {themePrimary}; color: {font_color1};')
         self.setCentralWidget(centralWidget)
 
     def resetForm(self):

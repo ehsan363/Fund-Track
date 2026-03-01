@@ -86,7 +86,9 @@ class MainWindow(QMainWindow):
                 buttonBgColor = buttonConfig['bgcolor']
 
                 fontConfig = i[currentTheme]["Font"]
-                font_color = fontConfig['font-color']
+
+                font_color0 = fontConfig['font-color0']
+                font_color1 = fontConfig['font-color1']
 
 
         # Toolbar options
@@ -150,11 +152,12 @@ class MainWindow(QMainWindow):
         '''
         self.headingLabel = QLabel("HomePage")
         self.headingLabel.setAlignment(Qt.AlignLeft)
-        self.headingLabel.setStyleSheet("""
+        self.headingLabel.setStyleSheet(f"""
             font-size: 36px;
             font-family: DejaVu Sans Mono;
             padding-top: 15px;
             padding-left: 10px;
+            color: {font_color0}
         """)
 
         # Top row
@@ -180,7 +183,7 @@ class MainWindow(QMainWindow):
         self.summaryLabel = QLabel('Summary')
         self.summaryLabel.setStyleSheet(f"""
             font-size: 28px;
-            color: {font_color};
+            color: {font_color1};
             font-weight: bold;
             margin-left: 30px;
             padding-top: 5px;
@@ -189,7 +192,10 @@ class MainWindow(QMainWindow):
 
         self.budgetLabel = QLabel()
         self.budgetLabel.setAlignment(Qt.AlignTop)
-        self.budgetLabel.setStyleSheet('font-size: 18px;')
+        self.budgetLabel.setStyleSheet(f'''
+            font-size: 18px;
+            color: {font_color0};
+        ''')
 
         summaryLayout = QVBoxLayout(summaryCard)
         summaryLayout.addWidget(self.summaryLabel)
@@ -206,7 +212,7 @@ class MainWindow(QMainWindow):
             font-family: Caladea;
             font-weight: bold;
             background-color: {themeSecondary};
-            color: {font_color};
+            color: {font_color1};
             font-size: 26px;
             border-radius: 15px;''')
 
@@ -233,7 +239,7 @@ class MainWindow(QMainWindow):
         historyCard.setFixedWidth(900)
         historyCard.setStyleSheet(f'''
             font-size: 22px;
-            color: {font_color};
+            color: {font_color1};
             background-color: {themeSecondary};
             border-radius: 15px;
             margin-left: 20px;
@@ -276,7 +282,7 @@ class MainWindow(QMainWindow):
 
         centralWidget = QWidget()
         centralWidget.setLayout(pageLayout)
-        centralWidget.setStyleSheet(f'background-color: {themePrimary}; color: {font_color};')
+        centralWidget.setStyleSheet(f'background-color: {themePrimary}; color: {font_color1};')
         self.setCentralWidget(centralWidget)
 
         self.refresh()

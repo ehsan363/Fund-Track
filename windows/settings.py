@@ -41,17 +41,6 @@ class settingsWindow(QMainWindow):
         pageLayout.setSpacing(35)
 
         # UI elements
-        # Heading
-        self.headingLabel = QLabel("""Settings
-──────────────────────────────────────────────────────────────────────────────────────────""")
-        self.headingLabel.setAlignment(Qt.AlignLeft)
-        self.headingLabel.setStyleSheet("""
-            font-size: 36px;
-            font-family: DejaVu Sans Mono;
-            padding-top: 15px;
-            padding-left: 10px;
-        """)
-
         # Theme
         with open('data/config.json', 'r') as f:
             data = json.load(f)
@@ -73,9 +62,20 @@ class settingsWindow(QMainWindow):
                 entryColor = entryConfig['color']
                 entryBorderColor = entryConfig['bordercolor']
 
-                font_color = fontConfig['font-color']
+                font_color0 = fontConfig['font-color0']
+                font_color1 = fontConfig['font-color1']
 
-
+                # Heading
+                self.headingLabel = QLabel("""Settings
+──────────────────────────────────────────────────────────────────────────────────────────""")
+                self.headingLabel.setAlignment(Qt.AlignLeft)
+                self.headingLabel.setStyleSheet(f"""
+                    font-size: 36px;
+                    font-family: DejaVu Sans Mono;
+                    padding-top: 15px;
+                    padding-left: 10px;
+                    color: {font_color0}
+                """)
 
         # Back button to return to Homepage
         backButton = QPushButton(QIcon('img/back_icon.png'), 'Back')
@@ -83,7 +83,7 @@ class settingsWindow(QMainWindow):
         backButton.setStyleSheet(f'''
             QPushButton {{
                 background-color: {buttonBgColor};
-                color: {font_color};
+                color: {buttonColor};
                 padding: 10px 20px 10px 20px;
                 border-radius: 8px;
                 font-size: 16px;
@@ -114,7 +114,7 @@ class settingsWindow(QMainWindow):
         exportBtn.setStyleSheet(f'''
             QPushButton {{
                 background-color: {buttonBgColor};
-                color: {font_color};
+                color: {buttonColor};
                 padding: 10px 20px 10px 20px;
                 border-radius: 8px;
                 font-size: 16px;
@@ -137,7 +137,7 @@ class settingsWindow(QMainWindow):
                 QLineEdit {{
                 font-size: 18px;
                 font-family: Adwaita mono;
-                color: {font_color};
+                color: {font_color0};
                 background-color:{entryBgColor};
                 padding-top: 7px;
                 padding-bottom: 7px;
@@ -168,7 +168,7 @@ class settingsWindow(QMainWindow):
         saveBtn.setStyleSheet(f'''
             QPushButton {{
                 background-color: {buttonBgColor};
-                color: {font_color};
+                color: {buttonColor};
                 padding: 10px 20px 10px 20px;
                 border-radius: 8px;
                 font-size: 16px;
@@ -205,7 +205,7 @@ class settingsWindow(QMainWindow):
         shortcutsCard.setStyleSheet(f'''
             font-size: 18px;
             font-family: Adwaita mono;
-            color: {font_color};
+            color: {font_color1};
             background-color: {themeSecondary};
             border-radius: 10px;
             border: 3px solid {entryBorderColor};
@@ -219,42 +219,50 @@ class settingsWindow(QMainWindow):
         shortcutHeading1.setStyleSheet(f'''
             font-size: 22px;
             border: 1px solid {themeSecondary};
+            color: {font_color0}
         ''')
 
         shortcutLabel1 = QLabel('Ctrl + R: Refresh')
         shortcutLabel1.setStyleSheet(f'''
             padding-left: 15px;
             border: 1px solid {themeSecondary};
+            color: {font_color0}
         ''')
         shortcutLabel2 = QLabel('Alt + 1: Add Transaction')
         shortcutLabel2.setStyleSheet(f'''
             padding-left: 15px;
             border: 1px solid {themeSecondary};
+            color: {font_color0}
         ''')
         shortcutLabel3 = QLabel('Alt + 2: Edit Expense')
         shortcutLabel3.setStyleSheet(f'''
             padding-left: 15px;
             border: 1px solid {themeSecondary};
+            color: {font_color0}
         ''')
         shortcutLabel4 = QLabel('Alt + 3: Edit Income')
         shortcutLabel4.setStyleSheet(f'''
             padding-left: 15px;
             border: 1px solid {themeSecondary};
+            color: {font_color0}
         ''')
         shortcutLabel5 = QLabel('Alt + 4: History')
         shortcutLabel5.setStyleSheet(f'''
             padding-left: 15px;
             border: 1px solid {themeSecondary};
+            color: {font_color0}
         ''')
         shortcutLabel6 = QLabel('Alt + 5: User')
         shortcutLabel6.setStyleSheet(f'''
             padding-left: 15px;
             border: 1px solid {themeSecondary};
+            color: {font_color0}
         ''')
         shortcutLabel7 = QLabel('Alt + 6: Settings')
         shortcutLabel7.setStyleSheet(f'''
             padding-left: 15px;
             border: 1px solid {themeSecondary};
+            color: {font_color0}
         ''')
 
         shortcutHeading2 = QLabel('Edit Expense/Edit Income')
@@ -262,12 +270,14 @@ class settingsWindow(QMainWindow):
             font-size: 22px;
             padding-top: 20px;
             border: 1px solid {themeSecondary};
+            color: {font_color0}
         ''')
 
         shortcutLabel8 = QLabel('Ctrl + D: Delete')
         shortcutLabel8.setStyleSheet(f'''
             padding-left: 15px;
             border: 1px solid {themeSecondary};
+            color: {font_color0}
         ''')
 
         shortcutHeading3 = QLabel('Add Transactions / Edit Expense / Edit Income / User / Settings')
@@ -275,24 +285,28 @@ class settingsWindow(QMainWindow):
             font-size: 22px;
             padding-top: 20px;
             border: 1px solid {themeSecondary};
+            color: {font_color0}
         ''')
 
         shortcutLabel9 = QLabel('Ctrl + W: Close')
         shortcutLabel9.setStyleSheet(f'''
             padding-left: 15px;
             border: 1px solid {themeSecondary};
+            color: {font_color0}
         ''')
 
         dividerLine1 = QLabel('──────────────────────────────────────────────────────────────────────────────────────────')
-        dividerLine1.setStyleSheet('''
+        dividerLine1.setStyleSheet(f'''
             font-size: 20px;
             font-weight: bold;
+            color: {font_color0}
         ''')
 
         dividerLine2 = QLabel('──────────────────────────────────────────────────────────────────────────────────────────')
-        dividerLine2.setStyleSheet('''
+        dividerLine2.setStyleSheet(f'''
             font-size: 20px;
             font-weight: bold;
+            color: {font_color0}
         ''')
 
         shortcutsDisplayLayout.addWidget(shortcutHeading1)
@@ -319,7 +333,7 @@ class settingsWindow(QMainWindow):
 
         centralWidget = QWidget()
         centralWidget.setLayout(pageLayout)
-        centralWidget.setStyleSheet(f'background-color: {themePrimary}; color: {font_color};')
+        centralWidget.setStyleSheet(f'background-color: {themePrimary}; color: {font_color1};')
         self.setCentralWidget(centralWidget)
 
     def pathChanger(self):

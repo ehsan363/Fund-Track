@@ -56,16 +56,6 @@ class historyWindow(QMainWindow):
         
         scroll is the variable which allows the user to scroll through the page of recent transactions.
         '''
-        # Heading
-        self.headingLabel = QLabel("""History
-──────────────────────────────────────────────────────────────────────────────────────────""")
-        self.headingLabel.setAlignment(Qt.AlignLeft)
-        self.headingLabel.setStyleSheet("""
-            font-size: 36px;
-            font-family: DejaVu Sans Mono;
-            padding-top: 15px;
-            padding-left: 10px;""")
-
         # Theme
         with open('data/config.json', 'r') as f:
             data = json.load(f)
@@ -78,7 +68,9 @@ class historyWindow(QMainWindow):
                 sortConfig = i[currentTheme]["Sortmenu"]
                 fontConfig = i[currentTheme]["Font"]
 
-                font_color = fontConfig['font-color']
+                font_color0 = fontConfig['font-color0']
+                font_color1 = fontConfig['font-color1']
+                font_color2 = fontConfig['font-color2']
 
                 buttonBgColor = buttonConfig['bgcolor']
                 buttonHoverBgColor = buttonConfig['hoverbgcolor']
@@ -88,6 +80,17 @@ class historyWindow(QMainWindow):
                 sortNormalBorder = sortConfig["border"]
                 sortNormalBgColor = sortConfig["bgcolor"]
 
+        # Heading
+        self.headingLabel = QLabel("""History
+──────────────────────────────────────────────────────────────────────────────────────────""")
+        self.headingLabel.setAlignment(Qt.AlignLeft)
+        self.headingLabel.setStyleSheet(f"""
+            font-size: 36px;
+            font-family: DejaVu Sans Mono;
+            padding-top: 15px;
+            padding-left: 10px;
+            color : {font_color0}
+        """)
 
         backButton = QPushButton(QIcon('img/back_icon.png'), 'Back')
         backButton.setShortcut(QKeySequence('Ctrl+W'))
@@ -127,16 +130,15 @@ class historyWindow(QMainWindow):
         self.sortMenu.setStyleSheet(f"""
             QComboBox {{
                 font-size: 18px;
+                color: {font_color0};
                 padding: 8px;
                 border-radius: 5px;
-                border: 2px solid {sortNormalBorder};
+                border: 2px solid {font_color0};
                 background-color: {sortNormalBgColor};
                 font-family: Adwaita mono;
             }}
-            
-            QComboBox:focus {{
-                border: 2px solid {font_color};
-            }}""")
+        """)
+
         self.sortMenu.addItems(
             ['Date DESC',
              'Date ASC',
@@ -157,7 +159,7 @@ class historyWindow(QMainWindow):
         pageLayout.addWidget(scroll, 1)
         pageLayout.addStretch()
 
-        centralWidget.setStyleSheet(f'background-color: {themePrimary}; color: {font_color};')
+        centralWidget.setStyleSheet(f'background-color: {themePrimary}; color: {font_color1};')
         self.setCentralWidget(centralWidget)
 
     def transactionSort(self, sortedTo):
@@ -182,7 +184,7 @@ class historyWindow(QMainWindow):
             currentTheme = read["CurrentTheme"]
             for i in read['Themes']:
                 fontConfig = i[currentTheme]['Font']
-                font_color = fontConfig['font-color']
+                font_color1 = fontConfig['font-color1']
 
                 entryConfig = i[currentTheme]['Entry']
                 entryConfigBgColor = entryConfig["bgcolor"]
@@ -205,6 +207,6 @@ class historyWindow(QMainWindow):
                 background-color: {entryConfigBgColor};
                 border: 3px solid {transactionColorCode};
                 border-radius: 15px;
-                color: {font_color};''')
+                color: {font_color1};''')
 
             self.contentLayout.addWidget(label)

@@ -42,16 +42,6 @@ class userWindow(QMainWindow):
         pageLayout.setSpacing(35)
 
         # UI elements
-        # Heading
-        self.headingLabel = QLabel("""User
-──────────────────────────────────────────────────────────────────────────────────────────""")
-        self.headingLabel.setAlignment(Qt.AlignLeft)
-        self.headingLabel.setStyleSheet("""
-            font-size: 36px;
-            font-family: DejaVu Sans Mono;
-            padding-top: 15px;
-            padding-left: 10px;""")
-
         # Theme
         with open('data/config.json', 'r') as f:
             data = json.load(f)
@@ -73,7 +63,20 @@ class userWindow(QMainWindow):
                 entryColor = entryConfig['color']
                 entryBorderColor = entryConfig['bordercolor']
 
-                font_color = fontConfig['font-color']
+                font_color0 = fontConfig['font-color0']
+                font_color1 = fontConfig['font-color1']
+
+        # Heading
+        self.headingLabel = QLabel("""User
+──────────────────────────────────────────────────────────────────────────────────────────""")
+        self.headingLabel.setAlignment(Qt.AlignLeft)
+        self.headingLabel.setStyleSheet(f"""
+            font-size: 36px;
+            font-family: DejaVu Sans Mono;
+            padding-top: 15px;
+            padding-left: 10px;
+            color: {font_color0}
+        """)
 
         # Back button to return to Homepage
         backButton = QPushButton(QIcon('img/back_icon.png'), 'Back')
@@ -102,7 +105,7 @@ class userWindow(QMainWindow):
         self.enterName.setStyleSheet(f"""
             QLineEdit {{
                 background-color: {entryBgColor};
-                color: {entryColor};
+                color: {font_color1};
                 border: 2px solid {entryColor};
                 border-radius: 8px;
                 padding: 8px 12px;
@@ -131,8 +134,8 @@ class userWindow(QMainWindow):
         self.budgetEntry.setStyleSheet(f'''
             QDoubleSpinBox {{
                 background-color: {entryBgColor};
-                color: {entryColor};
-                border: 2px solid {font_color};
+                color: {font_color1};
+                border: 2px solid {entryColor};
                 border-radius: 8px;
                 padding: 6px 10px;
                 font-size: 16px;
@@ -181,7 +184,7 @@ class userWindow(QMainWindow):
 
         centralWidget = QWidget()
         centralWidget.setLayout(pageLayout)
-        centralWidget.setStyleSheet(f'background-color: {themePrimary}; color: {font_color};')
+        centralWidget.setStyleSheet(f'background-color: {themePrimary}; color: {font_color1};')
         self.setCentralWidget(centralWidget)
 
     def changeName(self):

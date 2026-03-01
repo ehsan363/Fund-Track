@@ -58,16 +58,6 @@ class editExpenseWindow(QMainWindow):
         headingLabel is label for to display the heading of the window
         '''
         # UI elements
-        # Heading
-        self.headingLabel = QLabel("""Edit Expense
-──────────────────────────────────────────────────────────────────────────────────────────""")
-        self.headingLabel.setAlignment(Qt.AlignLeft)
-        self.headingLabel.setStyleSheet("""
-            font-size: 36px;
-            font-family: DejaVu Sans Mono;
-            padding-top: 15px;
-            padding-left: 10px;""")
-
         # Theme
         with open('data/config.json', 'r') as f:
             data = json.load(f)
@@ -90,10 +80,24 @@ class editExpenseWindow(QMainWindow):
                 entryColor = entryConfig['color']
                 entryBorderColor = entryConfig['bordercolor']
 
-                font_color = fontConfig['font-color']
+                font_color0 = fontConfig['font-color0']
+                font_color1 = fontConfig['font-color1']
+                font_color2 = fontConfig['font-color2']
 
                 sortNormalBorder = sortConfig["border"]
                 sortNormalBgColor = sortConfig["bgcolor"]
+
+        # Heading
+        self.headingLabel = QLabel("""Edit Expense
+──────────────────────────────────────────────────────────────────────────────────────────""")
+        self.headingLabel.setAlignment(Qt.AlignLeft)
+        self.headingLabel.setStyleSheet(f"""
+            font-size: 36px;
+            font-family: DejaVu Sans Mono;
+            padding-top: 15px;
+            padding-left: 10px;
+            color: {font_color0}
+        """)
 
 
         '''
@@ -110,7 +114,7 @@ class editExpenseWindow(QMainWindow):
         backButton.setStyleSheet(f'''
             QPushButton {{
                 background-color: {buttonBgColor};
-                color: {font_color};
+                color: {buttonColor};
                 padding: 10px 20px 10px 20px;
                 border-radius: 8px;
                 font-size: 16px;
@@ -134,7 +138,7 @@ class editExpenseWindow(QMainWindow):
         deleteButton.setStyleSheet(f'''
             QPushButton {{
                 background-color: {buttonBgColor};
-                color: {font_color};
+                color: {buttonColor};
                 padding: 10px 20px 10px 20px;
                 border-radius: 8px;
                 font-size: 18px;
@@ -157,7 +161,7 @@ class editExpenseWindow(QMainWindow):
         changeAmountButton.setStyleSheet(f'''
             QPushButton {{
                 background-color: {buttonBgColor};
-                color: black;
+                color: {buttonColor};
                 padding: 10px 20px 10px 20px;
                 border-radius: 8px;
                 font-size: 18px;
@@ -181,7 +185,7 @@ class editExpenseWindow(QMainWindow):
         changeTypeButton.setStyleSheet(f'''
             QPushButton {{
                 background-color: {buttonBgColor};
-                color: black;
+                color: {buttonColor};
                 padding: 10px 20px 10px 20px;
                 border-radius: 8px;
                 font-size: 18px;
@@ -275,7 +279,7 @@ class editExpenseWindow(QMainWindow):
             QLineEdit {{
                 font-size: 18px;
                 font-family: Adwaita mono;
-                color: {font_color};
+                color: {font_color0};
                 background-color:{entryBgColor};
                 padding-top: 7px;
                 padding-bottom: 7px;
@@ -322,21 +326,14 @@ class editExpenseWindow(QMainWindow):
         self.sortMenu.setStyleSheet(f"""
             QComboBox {{
                 font-size: 18px;
+                color: {font_color0};
                 padding: 8px;
                 border-radius: 5px;
-                border: 2px solid {sortNormalBorder};
+                border: 2px solid {font_color0};
                 background-color: {sortNormalBgColor};
                 font-family: Adwaita mono;
             }}
-            
-            QComboBox QAbstractItemView::item:selected {{
-                background-color: {sortNormalBgColor};
-                color: {font_color};
-            }}
-            
-            'QComboBox:focus {{
-                border: 2px solid {sortNormalBgColor};
-            }}""")
+            """)
         self.sortMenu.addItems(
             ['Date DESC',
              'Date ASC',
@@ -360,7 +357,7 @@ class editExpenseWindow(QMainWindow):
         pageLayout.addWidget(scroll, 1)
         pageLayout.addStretch()
 
-        centralWidget.setStyleSheet(f'background-color: {themePrimary}; color: {font_color};')
+        centralWidget.setStyleSheet(f'background-color: {themePrimary}; color: {font_color1};')
         self.setCentralWidget(centralWidget)
 
     def transactionSort(self, sortedTo):
@@ -378,7 +375,7 @@ class editExpenseWindow(QMainWindow):
             currentTheme = data['CurrentTheme']
             for i in data['Themes']:
                 fontConfig = i[currentTheme]["Font"]
-                font_color = fontConfig['font-color']
+                font_color1 = fontConfig['font-color1']
 
                 buttonConfig = i[currentTheme]["Button"]
                 checkedBgColor = buttonConfig["bgcolor"]
@@ -406,7 +403,7 @@ class editExpenseWindow(QMainWindow):
                 background-color: {entryConfigBgColor};
                 border: 3px solid {transactionColorCode};
                 border-radius: 15px;
-                color: {font_color};''')
+                color: {font_color1};''')
 
             label.setSizePolicy(
                 label.sizePolicy().horizontalPolicy(),
@@ -418,7 +415,7 @@ class editExpenseWindow(QMainWindow):
                 QCheckBox {{
                     spacing: 10px;
                     font-size: 14px;
-                    color: {font_color};
+                    color: {font_color1};
                     font-family: Adwaita mono;
                 }}
                 QCheckBox::indicator {{
@@ -426,12 +423,12 @@ class editExpenseWindow(QMainWindow):
                     height: 20px;
                 }}
                 QCheckBox::indicator:unchecked {{
-                    border: 2px solid {font_color};
+                    border: 2px solid {font_color1};
                     background: white;
                     border-radius: 4px;
                 }}
                 QCheckBox::indicator:checked {{
-                    border: 2px solid {font_color};
+                    border: 2px solid {font_color1};
                     border-radius: 4px;
                     background-color: {checkedBgColor};
                 }}
