@@ -19,7 +19,7 @@
         {
             "Dark": {
                 "Primary": "#141414",
-                "Secondary":  "#222222",
+                "Secondary": "#222222",
                 "Button": {
                     "bgcolor": "#ed7521",
                     "hoverbgcolor": "#f08337",
@@ -67,7 +67,7 @@
             }
         }
     ],
-    "CurrentTheme": "Light",
+    "CurrentTheme": "Dark",
     "CurrencySuffix": "$",
     "Version": "1.0"
 }

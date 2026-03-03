@@ -1,14 +1,29 @@
+'''
+This file is for the creation of a barchart in the homepage and for refereshing it with new data.
+'''
+
+# Importing matplotlib modules for the barchart
 from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
+
+# Importing class from other file
 from data.database import DBmanager
+
+# Importing json to read the data from json file
 import json
 
 def initiation():
+    '''
+    Function to initialize the creation of the barchart
+    '''
     figure = Figure()  # Blank canvas
     canvas = FigureCanvas(figure) # Convertion of canvas for Qt widget
     return figure, canvas
 
 def plot_bar_chart(figure, canvas):
+    '''
+    Function to create the barchart in the homepage.
+    '''
     # Theme data
     with open('data/config.json', 'r') as f:
         data = json.load(f)
@@ -19,7 +34,6 @@ def plot_bar_chart(figure, canvas):
 
             fontConfig = i[currentTheme]['Font']
 
-            font_color0 = fontConfig['font-color0']
             font_color1 = fontConfig['font-color1']
 
     # Values for the barchart
@@ -69,6 +83,10 @@ def plot_bar_chart(figure, canvas):
     return plt
 
 def update_bar_chart(plt, figure, canvas):
+    '''
+    Function to update the barchart data.
+    This function is identical to 'plot_bar_chart' fucntion with minor changes
+    '''
     # Theme data
     with open('data/config.json', 'r') as f:
         data = json.load(f)
@@ -79,7 +97,6 @@ def update_bar_chart(plt, figure, canvas):
 
             fontConfig = i[currentTheme]['Font']
 
-            font_color0 = fontConfig['font-color0']
             font_color1 = fontConfig['font-color1']
 
     plt.clear()

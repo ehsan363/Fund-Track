@@ -1,9 +1,18 @@
+# Importing functions from other files
 from helper.dateAndTime import reportDateCompare
 from data.database import DBmanager
+
+# Importing from modules
 from pathlib import Path
 import json
 
 def monthlyReport():
+    '''
+    Function to generate monthly report.
+    Generated .txt files as a report right now but will change later on to a PDF or/and .xlsx files.
+    Will generate a report for the previous month if the date is too old in the json file.
+    A button will be added to the user window or some other window which will allow the user to generate a report on demand.
+    '''
     with open('data/config.json', 'r') as pathFile:
         JSONfile = json.load(pathFile)
         path = Path(JSONfile['Report'][0]['Path'])

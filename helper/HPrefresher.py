@@ -1,10 +1,26 @@
+'''
+This is the file that gives all the dynamic information to the homepage of the program.
+The functions inside this file will be called and according to that the information will be renewed as well.
+'''
+
+
+# Importing GUI elements
 from PySide6.QtWidgets import QLabel
+
+# Importing functions from other files
 from data.database import DBmanager
 from helper.barchartMatplotlib import update_bar_chart
 from helper.dateAndTime import greetingText, dateCompare
+
+# json to write and read json files
 import json
 
 def greetingRefresh(greetingLabel):
+    '''
+    Function to refresh the greeting text in the homepage.
+    The greeting will be refreshed according to time when the refresh button is pressed
+    or when the user enters the homepage again.
+    '''
     with open('data/config.json', 'r') as f:
         data = json.load(f)
         username = data['User'][0]['Name']
@@ -18,6 +34,10 @@ def greetingRefresh(greetingLabel):
         greetingLabel.setText(greeting)
 
 def summaryCardRefresher(budgetLabel):
+    '''
+    Function to refresh the summary card text in the homepage.
+    It refreshes the expenses up until then as well as the budget.
+    '''
     with open('data/config.json', 'r') as f:
         data = json.load(f)
         budgetRead = data['User'][1]['Budget']
@@ -33,12 +53,18 @@ Balance: {float(budgetRead) - totalExpense:,.2f} {currencySuffix}'''
     budgetLabel.setText(budget)
 
 def clear_layout(layout):
+    '''
+    Function to clear layouts before entering the new data
+    '''
     while layout.count():
         item = layout.takeAt(0)
         if item.widget():
             item.widget().deleteLater()
 
 def transactionHistoryRefresher(historyLayout):
+    '''
+    Function to refresh the data of recent transactions
+    '''
     clear_layout(historyLayout)
     db = DBmanager()  # Expense from Database to history card
 
@@ -121,4 +147,7 @@ def transactionHistoryRefresher(historyLayout):
     historyLayout.addWidget(transactionLabel4)
 
 def barchartRefresher(plt, figure, canvas):
+    '''
+    Function to refresh the matplotlib barchart
+    '''
     update_bar_chart(plt, figure, canvas)
