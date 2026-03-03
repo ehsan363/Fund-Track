@@ -1,6 +1,12 @@
-# Importing libraries
+'''
+This file contains all the functions that controls the database.
+These functions are imported and then called by other files when needed.
+'''
+# Importing modules
 import sqlite3
 from pathlib import Path
+
+# Importing date related function from another file
 from helper.dateAndTime import tdy
 
 # Database path
@@ -8,11 +14,20 @@ BASE_DIR = Path(__file__).resolve().parent
 DB_PATH = BASE_DIR / "transactions"
 
 class DBmanager:
+    '''
+    Class that contains all the functions that control the database.
+    '''
     def __init__(self):
+        '''
+        Initialization function.
+        '''
         self.conn = sqlite3.connect(DB_PATH)
         self.conn.row_factory = sqlite3.Row # row_factory for better data handling
 
     def Expense(self):
+        '''
+        Function that returns the total expense of the current month.
+        '''
         today = tdy()
         month = today.strftime('%m')
         year = today.strftime('%Y')
@@ -32,6 +47,9 @@ class DBmanager:
 
     # Function for fetching transaction history
     def history(self):
+        '''
+        Function that return the recent 5 transactions in the database.
+        '''
         cursor = self.conn.execute('''
             SELECT category, amount, date, type
             FROM transactions
@@ -46,6 +64,12 @@ class DBmanager:
         return rows
 
     def incomeExpense(self, month, tType):
+        '''
+        Function that returns the total income and expense of each month of an year as per demand.
+        The function will take in the variable which will let it know which month's transaction and what type ("Income", "Expense")
+        We will fetch the current year by using 'tdy' function and then extracting the year from it.
+        Then according to the 'tType', "Income" or "Expense" the data will be fetched from the database and returned.
+        '''
         today = tdy()
         year = int(today.strftime('%Y'))
 
@@ -78,14 +102,20 @@ class DBmanager:
             return int(totalExpense)
 
     def categories(self, type):
+        '''
+        Function to fetch the categories according to transaction type.
+        '''
         cursor = self.conn.execute(f'SELECT * FROM CATEGORIES WHERE type = ?;', (type,))
         categoriesFetched = cursor.fetchall()
-        categorieList = []
+        categoryList = []
         for row in categoriesFetched:
-            categorieList.append(row['name'])
-        return categorieList
+            categoryList.append(row['name'])
+        return categoryList
 
     def getType(self, selectedIDs):
+        '''
+        Function to fetch all the available types from the database.
+        '''
         for i in selectedIDs:
             cursor = self.conn.execute(f'SELECT TYPE FROM TRANSACTIONS WHERE ID = {int(i)};')
             data = cursor.fetchall()
@@ -94,12 +124,19 @@ class DBmanager:
                 return type
 
     def addTransactionToDB(self, amount, IorE, category, date, description, account):
+        '''
+        Function to add a transaction into the database.
+        '''
         self.cursor = self.conn.cursor()
         self.cursor.execute('INSERT INTO TRANSACTIONS (amount, type, category, date, description, account) VALUES (?,?,?,?,?,?)', (amount, IorE, category, date, description, account))
         self.conn.commit()
         print('DONE')
 
     def transactionHistory(self, sortedTo):
+        '''
+        Function to fetch all the transaction history according to sorting option selected or my deafult most recent.
+        This function is used only by the history window.
+        '''
         self.cursor = self.conn.cursor()
         if sortedTo == 'Date ASC':
             code = self.cursor.execute('SELECT * FROM TRANSACTIONS ORDER BY DATE ASC;')
@@ -129,6 +166,10 @@ class DBmanager:
         return self.data
 
     def editingTransactionHistory(self, sortedTo, transactionType):
+        ''''
+        Function that fetches all the transactions according to the window that is calling ("Edit Incomes Window", "Edit Expenses Window") and sort option selected.
+        Default one being most recent.
+        '''
         self.cursor = self.conn.cursor()
         if sortedTo == 'Date ASC':
             code = self.cursor.execute(f'SELECT * FROM TRANSACTIONS WHERE TYPE = "{transactionType}" ORDER BY DATE ASC;')
@@ -152,18 +193,27 @@ class DBmanager:
         return self.data
 
     def deleteSelected(self, selectedIDs):
+        '''
+        Function to delete the selected transaction(s) selected in the edit incomes or edit expenses windows.
+        '''
         self.cursor = self.conn.cursor()
         for i in selectedIDs:
             code = self.cursor.execute(f'DELETE FROM TRANSACTIONS WHERE ID = {int(i)};')
             self.conn.commit()
 
     def changeAmount(self,selectedIDs, newAmount):
+        '''
+        Function to change the amount of the transaction(s) selected in the edit incomes or edit expenses windows.
+        '''
         self.cursor = self.conn.cursor()
         for i in selectedIDs:
             code = self.cursor.execute(f'UPDATE TRANSACTIONS SET AMOUNT = {newAmount} WHERE ID = {int(i)};')
             self.conn.commit()
 
     def changeType(self, selectedIDs):
+        '''
+        Function to change the type of the transaction(s) selected in the edit incomes or edit expenses windows.
+        '''
         self.cursor = self.conn.cursor()
         for i in selectedIDs:
             code = self.cursor.execute(f'SELECT TYPE FROM TRANSACTIONS WHERE ID = {int(i)};')
@@ -179,12 +229,18 @@ class DBmanager:
             self.conn.commit()
 
     def changeCategory(self, selectedIDs, newCategory):
+        '''
+        Function to change the category of the transaction(s) selected in the edit incomes or edit expenses windows.
+        '''
         self.cursor = self.conn.cursor()
         for i in selectedIDs:
             code = self.cursor.execute(f'UPDATE TRANSACTIONS SET CATEGORY = "{newCategory}" WHERE ID = {int(i)};')
             self.conn.commit()
 
     def changeDate(self, selectedIDs, newDate):
+        '''
+        Function to change the date of the transaction(s) selected in the edit incomes or edit expenses windows.
+        '''
         self.cursor = self.conn.cursor()
         for i in selectedIDs:
             code = self.cursor.execute(f'UPDATE TRANSACTIONS SET DATE = "{newDate}" WHERE ID = {int(i)};')
@@ -197,6 +253,9 @@ class DBmanager:
             self.conn.commit()
 
     def ReportData(self, year, month):
+        '''
+        Function that fetches the data from the database for the creation of the report
+        '''
         self.cursor = self.conn.cursor()
         code = self.cursor.execute(f'''SELECT SUM(amount) AS total_income FROM transactions
         WHERE type = 'income'
@@ -217,7 +276,7 @@ class DBmanager:
         return categories, total_income
     # Function to close SQLite
     def close(self):
+        '''
+        Function to close the connection to the database.
+        '''
         self.conn.close()
-
-db = DBmanager()
-db.ReportData('12','2025')
