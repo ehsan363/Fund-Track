@@ -4,7 +4,7 @@ This file will get opened by main.py whenever the Settings button is clicked or 
 '''
 
 # Importing GUI elements
-from PySide6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QLabel, QPushButton, QFrame, QLineEdit, QHBoxLayout, QFileDialog
+from PySide6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QLabel, QPushButton, QFrame, QLineEdit, QHBoxLayout, QFileDialog, QComboBox
 from PySide6.QtGui import QIcon, QFont, QKeySequence
 from PySide6.QtCore import Qt, Signal
 
@@ -52,6 +52,7 @@ class settingsWindow(QMainWindow):
                 buttonConfig = i[currentTheme]['Button']
                 entryConfig = i[currentTheme]['Entry']
                 fontConfig = i[currentTheme]["Font"]
+                sortConfig = i[currentTheme]["Sortmenu"]
 
                 buttonBgColor = buttonConfig['bgcolor']
                 buttonHoverBgColor = buttonConfig['hoverbgcolor']
@@ -65,17 +66,24 @@ class settingsWindow(QMainWindow):
                 font_color0 = fontConfig['font-color0']
                 font_color1 = fontConfig['font-color1']
 
-                # Heading
-                self.headingLabel = QLabel("""Settings
+                sortNormalBgColor = sortConfig["bgcolor"]
+
+            themes = []
+            for i in data['Themes'][0].keys():
+                themes.append(i)
+
+
+            # Heading
+            self.headingLabel = QLabel("""Settings
 ──────────────────────────────────────────────────────────────────────────────────────────""")
-                self.headingLabel.setAlignment(Qt.AlignLeft)
-                self.headingLabel.setStyleSheet(f"""
-                    font-size: 36px;
-                    font-family: DejaVu Sans Mono;
-                    padding-top: 15px;
-                    padding-left: 10px;
-                    color: {font_color0}
-                """)
+            self.headingLabel.setAlignment(Qt.AlignLeft)
+            self.headingLabel.setStyleSheet(f"""
+                font-size: 36px;
+                font-family: DejaVu Sans Mono;
+                padding-top: 15px;
+                padding-left: 10px;
+                color: {font_color0}
+            """)
 
         # Back button to return to Homepage
         backButton = QPushButton(QIcon('img/back_icon.png'), 'Back')
@@ -188,6 +196,51 @@ class settingsWindow(QMainWindow):
         currencyCardLayout.setAlignment(Qt.AlignLeft)
         currencyCardLayout.addWidget(self.currencyEntry)
         currencyCardLayout.addWidget(saveBtn)
+
+        # Theme changing option
+        themeCard = QFrame()
+        themeCard.setStyleSheet(f'''
+            background-color: {themeSecondary};
+            border: 3px solid {font_color0};
+            border-radius: 10px;
+            font-size: 24px;
+            font-family: Adwaita mono;
+            color: {font_color0};
+            padding-top: 10px;
+            padding-bottom: 10px;
+            margin-left: 5px;
+            margin-right: 5px;
+        ''')
+
+        themeCardLayout = QHBoxLayout(themeCard)
+        themeCardLayout.setAlignment(Qt.AlignLeft)
+        themeCardLayout.setSpacing(50)
+        themeLabel = QLabel('Theme')
+        themeLabel.setStyleSheet(f'''
+            border: 3px solid {themeSecondary};
+        ''')
+
+        self.themeMenu = QComboBox()
+        self.themeMenu.setStyleSheet(f"""
+            QComboBox {{
+                font-size: 18px;
+                color: {font_color0};
+                padding: 8px;
+                border-radius: 5px;
+                border: 2px solid {font_color0};
+                background-color: {sortNormalBgColor};
+                font-family: Adwaita mono;
+            }}
+        """)
+        themes.remove(currentTheme)
+        themes.insert(0, currentTheme)
+        self.themeMenu.addItems(themes)
+        self.themeMenu.currentTextChanged.connect(self.changeTheme)
+        self.changeTheme(self.themeMenu.currentText())
+
+        themeCardLayout.addWidget(themeLabel)
+        themeCardLayout.addWidget(self.themeMenu)
+
 
         '''
         Export button and card that holds currency entry and save button added to pathCardLayout.
@@ -327,6 +380,7 @@ class settingsWindow(QMainWindow):
         pageLayout.addWidget(backButton)
         pageLayout.addWidget(self.headingLabel)
         pageLayout.addWidget(pathCard)
+        pageLayout.addWidget(themeCard)
         pageLayout.addWidget(shortcutsCard)
 
         pageLayout.addStretch()
@@ -365,3 +419,11 @@ class settingsWindow(QMainWindow):
             json.dump(data, f, indent=4)
 
         self.currencyEntry.clear()
+
+    def changeTheme(self, newTheme):
+        with open('data/config.json', 'r') as f:
+            data = json.load(f)
+            data['CurrentTheme'] = newTheme
+
+        with open('data/config.json', 'w') as f:
+            json.dump(data, f, indent=4)

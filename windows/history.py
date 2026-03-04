@@ -77,7 +77,6 @@ class historyWindow(QMainWindow):
                 buttonClickedBgColor = buttonConfig['clickbgcolor']
                 buttonColor = buttonConfig['color']
 
-                sortNormalBorder = sortConfig["border"]
                 sortNormalBgColor = sortConfig["bgcolor"]
 
         # Heading
