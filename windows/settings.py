@@ -8,6 +8,9 @@ from PySide6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QLabel, QPushBu
 from PySide6.QtGui import QIcon, QFont, QKeySequence
 from PySide6.QtCore import Qt, Signal
 
+# Importing ThemeManager for changing themes
+from helper.themeManager import ThemeManager
+
 # json to read and write json file for the options selected
 import json
 
@@ -44,73 +47,43 @@ class settingsWindow(QMainWindow):
         # Theme
         with open('data/config.json', 'r') as f:
             data = json.load(f)
-            currentTheme = data['CurrentTheme']
-            for i in data['Themes']:
-                themePrimary = i[currentTheme]['Primary']
-                themeSecondary = i[currentTheme]['Secondary']
-
-                buttonConfig = i[currentTheme]['Button']
-                entryConfig = i[currentTheme]['Entry']
-                fontConfig = i[currentTheme]["Font"]
-                sortConfig = i[currentTheme]["Sortmenu"]
-
-                buttonBgColor = buttonConfig['bgcolor']
-                buttonHoverBgColor = buttonConfig['hoverbgcolor']
-                buttonClickedBgColor = buttonConfig['clickbgcolor']
-                buttonColor = buttonConfig['color']
-
-                entryBgColor = entryConfig['bgcolor']
-                entryColor = entryConfig['color']
-                entryBorderColor = entryConfig['bordercolor']
-
-                font_color0 = fontConfig['font-color0']
-                font_color1 = fontConfig['font-color1']
-
-                sortNormalBgColor = sortConfig["bgcolor"]
-
             themes = []
             for i in data['Themes'][0].keys():
                 themes.append(i)
 
+        self.themeManager = ThemeManager()
+        self.themeManager.themeChanged.connect(self.refreshTheme)
 
-            # Heading
-            self.headingLabel = QLabel("""Settings
-──────────────────────────────────────────────────────────────────────────────────────────""")
-            self.headingLabel.setAlignment(Qt.AlignLeft)
-            self.headingLabel.setStyleSheet(f"""
-                font-size: 36px;
-                font-family: DejaVu Sans Mono;
-                padding-top: 15px;
-                padding-left: 10px;
-                color: {font_color0}
-            """)
+        # Heading
+        self.headingLabel = QLabel("""Settings
+─────────────────────────────────────────────────────────────────────────────────────────""")
+        self.headingLabel.setAlignment(Qt.AlignLeft)
+        self.headingLabelBaseStyle = """
+            font-size: 36px;
+            font-family: DejaVu Sans Mono;
+            padding-top: 15px;
+            padding-left: 10px;
+        """
 
         # Back button to return to Homepage
-        backButton = QPushButton(QIcon('img/back_icon.png'), 'Back')
-        backButton.setShortcut(QKeySequence('Ctrl+W')) # Shortcut key instead of pressing the button
-        backButton.setStyleSheet(f'''
-            QPushButton {{
-                background-color: {buttonBgColor};
-                color: {buttonColor};
+        self.backButton = QPushButton(QIcon('img/back_icon.png'), 'Back')
+        self.backButton.setShortcut(QKeySequence('Ctrl+W')) # Shortcut key instead of pressing the button
+        self.backButtonBaseStyle = '''
+            QPushButton {
                 padding: 10px 20px 10px 20px;
                 border-radius: 8px;
                 font-size: 16px;
                 text-align: left;
-            }}
-            QPushButton:hover {{
-                background-color: {buttonHoverBgColor};
-            }}
-            QPushButton:pressed {{
-                background-color: {buttonClickedBgColor};
-            }}
-        ''')
-        backButton.clicked.connect(self.goHome_Signal.emit)
+            }
+        '''
+        self.backButton.clicked.connect(self.goHome_Signal.emit)
 
         # Card for all the settings elements
         pathCard = QFrame()
         pathCard.setStyleSheet('''
             font-size: 18px;
-            font-family: Adwaita mono;''')
+            font-family: Adwaita mono;
+        ''')
 
         # Layout for the settings elements (Horizontal)
         pathCardLayout = QHBoxLayout(pathCard)
@@ -118,50 +91,31 @@ class settingsWindow(QMainWindow):
         pathCardLayout.setSpacing(100)
 
         # Button to change the report exporting path
-        exportBtn = QPushButton('Export Path')
-        exportBtn.setStyleSheet(f'''
-            QPushButton {{
-                background-color: {buttonBgColor};
-                color: {buttonColor};
+        self.exportBtn = QPushButton('Export Path')
+        self.exportBtnBaseStyle = '''
+            QPushButton {
                 padding: 10px 20px 10px 20px;
                 border-radius: 8px;
                 font-size: 16px;
                 text-align: left;
-            }}
-            QPushButton:hover {{
-                background-color: {buttonHoverBgColor};
-            }}
-            QPushButton:pressed {{
-                background-color: {buttonClickedBgColor};
-            }}
-        ''')
-        exportBtn.clicked.connect(self.pathChanger)
+            }
+        '''
+        self.exportBtn.clicked.connect(self.pathChanger)
 
         # 'Entry' to enter new currency symbol
         self.currencyEntry = QLineEdit()
         self.currencyEntry.setPlaceholderText('Currency Symbol')
         self.currencyEntry.setFixedWidth(230)
-        self.currencyEntry.setStyleSheet(f'''
-                QLineEdit {{
+        self.currencyEntryBaseStyle = '''
+                QLineEdit {
                 font-size: 18px;
                 font-family: Adwaita mono;
-                color: {font_color0};
-                background-color:{entryBgColor};
                 padding-top: 7px;
                 padding-bottom: 7px;
                 padding-left: 15px;
                 border-radius: 10px;
-                border: 2px solid {entryColor}
-            }}
-            
-            QLineEdit:focus {{
-                border: 2px solid {entryBorderColor}
-            }}
-            
-            QLineEdit:hover {{
-                border: 2px solid {entryBorderColor}
-            }}
-        ''')
+            }
+            '''
 
         # Card to hold currency entry and and save button
         currencyCard = QFrame()
@@ -171,74 +125,69 @@ class settingsWindow(QMainWindow):
         ''')
 
         # Button to save the new currency
-        saveBtn = QPushButton('Save')
-        saveBtn.setFixedWidth(85)
-        saveBtn.setStyleSheet(f'''
-            QPushButton {{
-                background-color: {buttonBgColor};
-                color: {buttonColor};
+        self.saveBtn = QPushButton('Save')
+        self.saveBtn.setFixedWidth(85)
+        self.saveBtnBaseStyle = '''
+            QPushButton {
                 padding: 10px 20px 10px 20px;
                 border-radius: 8px;
                 font-size: 16px;
                 text-align: left;
-            }}
-            QPushButton:hover {{
-                background-color: {buttonHoverBgColor};
-            }}
-            QPushButton:pressed {{
-                background-color: {buttonClickedBgColor};
-            }}
-        ''')
-        saveBtn.clicked.connect(self.saveSettings)
+            }
+        '''
+        self.saveBtn.clicked.connect(self.saveSettings)
 
         # Layout to hold currency entry and and save button
         currencyCardLayout = QHBoxLayout(currencyCard)
         currencyCardLayout.setAlignment(Qt.AlignLeft)
         currencyCardLayout.addWidget(self.currencyEntry)
-        currencyCardLayout.addWidget(saveBtn)
+        currencyCardLayout.addWidget(self.saveBtn)
 
         # Theme changing option
-        themeCard = QFrame()
-        themeCard.setStyleSheet(f'''
-            background-color: {themeSecondary};
-            border: 3px solid {font_color0};
+        self.themeCard = QFrame()
+        self.themeCardBaseStyle = '''
             border-radius: 10px;
             font-size: 24px;
             font-family: Adwaita mono;
-            color: {font_color0};
             padding-top: 10px;
             padding-bottom: 10px;
             margin-left: 5px;
             margin-right: 5px;
-        ''')
+        '''
 
-        themeCardLayout = QHBoxLayout(themeCard)
+        themeCardLayout = QHBoxLayout(self.themeCard)
         themeCardLayout.setAlignment(Qt.AlignLeft)
         themeCardLayout.setSpacing(50)
-        themeLabel = QLabel('Theme')
-        themeLabel.setStyleSheet(f'''
-            border: 3px solid {themeSecondary};
-        ''')
+        self.themeLabel = QLabel('Theme')
+
+        # shortcutCard, creation made earlier so that the element added later can have the card to be added onto
+        self.shortcutsCard = QFrame()
+        self.shortcutsCardBaseStyle = '''
+            font-size: 18px;
+            font-family: Adwaita mono;
+            border-radius: 10px;
+        '''
+
+        shortcutsDisplayLayout = QVBoxLayout(self.shortcutsCard)
+        shortcutsDisplayLayout.setAlignment(Qt.AlignLeft)
+        shortcutsDisplayLayout.setSpacing(10)
 
         self.themeMenu = QComboBox()
-        self.themeMenu.setStyleSheet(f"""
-            QComboBox {{
+        self.themeMenuBaseStyle = """
+            QComboBox {
                 font-size: 18px;
-                color: {font_color0};
                 padding: 8px;
                 border-radius: 5px;
-                border: 2px solid {font_color0};
-                background-color: {sortNormalBgColor};
                 font-family: Adwaita mono;
-            }}
-        """)
+            }
+        """
+
         themes.remove(currentTheme)
         themes.insert(0, currentTheme)
         self.themeMenu.addItems(themes)
         self.themeMenu.currentTextChanged.connect(self.changeTheme)
-        self.changeTheme(self.themeMenu.currentText())
 
-        themeCardLayout.addWidget(themeLabel)
+        themeCardLayout.addWidget(self.themeLabel)
         themeCardLayout.addWidget(self.themeMenu)
 
 
@@ -247,148 +196,107 @@ class settingsWindow(QMainWindow):
         currencyCard was added PathCardLayout so that the elements inside currencyCardLayout will,
         stay in the same horizontal line with export button.
         '''
-        pathCardLayout.addWidget(exportBtn)
+        pathCardLayout.addWidget(self.exportBtn)
         pathCardLayout.addWidget(currencyCard)
 
         # Shortcuts
         '''
         All the available shortcuts in the program being displayed in the settings window.
         '''
-        shortcutsCard = QFrame()
-        shortcutsCard.setStyleSheet(f'''
-            font-size: 18px;
-            font-family: Adwaita mono;
-            color: {font_color1};
-            background-color: {themeSecondary};
-            border-radius: 10px;
-            border: 3px solid {entryBorderColor};
-        ''')
 
-        shortcutsDisplayLayout = QVBoxLayout(shortcutsCard)
-        shortcutsDisplayLayout.setAlignment(Qt.AlignLeft)
-        shortcutsDisplayLayout.setSpacing(10)
+        self.shortcutHeading1 = QLabel('Homepage')
+        self.shortcutHeading1BaseStyle = 'font-size: 22px;'
 
-        shortcutHeading1 = QLabel('Homepage')
-        shortcutHeading1.setStyleSheet(f'''
-            font-size: 22px;
-            border: 1px solid {themeSecondary};
-            color: {font_color0}
-        ''')
+        self.shortcutLabel1 = QLabel('Ctrl + R: Refresh')
+        self.shortcutLabel1BaseStyle = '''
+            padding-left: 15px;
+        '''
+        self.shortcutLabel2 = QLabel('Alt + 1: Add Transaction')
+        self.shortcutLabel2BaseStyle = '''
+            padding-left: 15px;
+        '''
+        self.shortcutLabel3 = QLabel('Alt + 2: Edit Expense')
+        self.shortcutLabel3BaseStyle = '''
+            padding-left: 15px;
+        '''
+        self.shortcutLabel4 = QLabel('Alt + 3: Edit Income')
+        self.shortcutLabel4BaseStyle = '''
+            padding-left: 15px;
+        '''
+        self.shortcutLabel5 = QLabel('Alt + 4: History')
+        self.shortcutLabel5BaseStyle = '''
+            padding-left: 15px;
+        '''
+        self.shortcutLabel6 = QLabel('Alt + 5: User')
+        self.shortcutLabel6BaseStyle = '''
+            padding-left: 15px;
+        '''
+        self.shortcutLabel7 = QLabel('Alt + 6: Settings')
+        self.shortcutLabel7BaseStyle = '''
+            padding-left: 15px;
+        '''
 
-        shortcutLabel1 = QLabel('Ctrl + R: Refresh')
-        shortcutLabel1.setStyleSheet(f'''
-            padding-left: 15px;
-            border: 1px solid {themeSecondary};
-            color: {font_color0}
-        ''')
-        shortcutLabel2 = QLabel('Alt + 1: Add Transaction')
-        shortcutLabel2.setStyleSheet(f'''
-            padding-left: 15px;
-            border: 1px solid {themeSecondary};
-            color: {font_color0}
-        ''')
-        shortcutLabel3 = QLabel('Alt + 2: Edit Expense')
-        shortcutLabel3.setStyleSheet(f'''
-            padding-left: 15px;
-            border: 1px solid {themeSecondary};
-            color: {font_color0}
-        ''')
-        shortcutLabel4 = QLabel('Alt + 3: Edit Income')
-        shortcutLabel4.setStyleSheet(f'''
-            padding-left: 15px;
-            border: 1px solid {themeSecondary};
-            color: {font_color0}
-        ''')
-        shortcutLabel5 = QLabel('Alt + 4: History')
-        shortcutLabel5.setStyleSheet(f'''
-            padding-left: 15px;
-            border: 1px solid {themeSecondary};
-            color: {font_color0}
-        ''')
-        shortcutLabel6 = QLabel('Alt + 5: User')
-        shortcutLabel6.setStyleSheet(f'''
-            padding-left: 15px;
-            border: 1px solid {themeSecondary};
-            color: {font_color0}
-        ''')
-        shortcutLabel7 = QLabel('Alt + 6: Settings')
-        shortcutLabel7.setStyleSheet(f'''
-            padding-left: 15px;
-            border: 1px solid {themeSecondary};
-            color: {font_color0}
-        ''')
-
-        shortcutHeading2 = QLabel('Edit Expense/Edit Income')
-        shortcutHeading2.setStyleSheet(f'''
+        self.shortcutHeading2 = QLabel('Edit Expense/Edit Income')
+        self.shortcutHeading2BaseStyle = '''
             font-size: 22px;
             padding-top: 20px;
-            border: 1px solid {themeSecondary};
-            color: {font_color0}
-        ''')
+        '''
 
-        shortcutLabel8 = QLabel('Ctrl + D: Delete')
-        shortcutLabel8.setStyleSheet(f'''
+        self.shortcutLabel8 = QLabel('Ctrl + D: Delete')
+        self.shortcutLabel8BaseStyle = '''
             padding-left: 15px;
-            border: 1px solid {themeSecondary};
-            color: {font_color0}
-        ''')
+        '''
 
-        shortcutHeading3 = QLabel('Add Transactions / Edit Expense / Edit Income / User / Settings')
-        shortcutHeading3.setStyleSheet(f'''
+        self.shortcutHeading3 = QLabel('Add Transactions / Edit Expense / Edit Income / User / Settings')
+        self.shortcutHeading3BaseStyle = '''
             font-size: 22px;
             padding-top: 20px;
-            border: 1px solid {themeSecondary};
-            color: {font_color0}
-        ''')
+        '''
 
-        shortcutLabel9 = QLabel('Ctrl + W: Close')
-        shortcutLabel9.setStyleSheet(f'''
+        self.shortcutLabel9 = QLabel('Ctrl + W: Close')
+        self.shortcutLabel9BaseStyle = '''
             padding-left: 15px;
-            border: 1px solid {themeSecondary};
-            color: {font_color0}
-        ''')
+        '''
 
-        dividerLine1 = QLabel('──────────────────────────────────────────────────────────────────────────────────────────')
-        dividerLine1.setStyleSheet(f'''
+        self.dividerLine1 = QLabel('──────────────────────────────────────────────────────────────────────────────────────────')
+        self.dividerLine1BaseStyle = '''
             font-size: 20px;
             font-weight: bold;
-            color: {font_color0}
-        ''')
+        '''
 
-        dividerLine2 = QLabel('──────────────────────────────────────────────────────────────────────────────────────────')
-        dividerLine2.setStyleSheet(f'''
+        self.dividerLine2 = QLabel('──────────────────────────────────────────────────────────────────────────────────────────')
+        self.dividerLine2BaseStyle = '''
             font-size: 20px;
             font-weight: bold;
-            color: {font_color0}
-        ''')
+        '''
 
-        shortcutsDisplayLayout.addWidget(shortcutHeading1)
-        shortcutsDisplayLayout.addWidget(shortcutLabel1)
-        shortcutsDisplayLayout.addWidget(shortcutLabel2)
-        shortcutsDisplayLayout.addWidget(shortcutLabel3)
-        shortcutsDisplayLayout.addWidget(shortcutLabel4)
-        shortcutsDisplayLayout.addWidget(shortcutLabel5)
-        shortcutsDisplayLayout.addWidget(shortcutLabel6)
-        shortcutsDisplayLayout.addWidget(shortcutLabel7)
-        shortcutsDisplayLayout.addWidget(dividerLine1)
-        shortcutsDisplayLayout.addWidget(shortcutHeading2)
-        shortcutsDisplayLayout.addWidget(shortcutLabel8)
-        shortcutsDisplayLayout.addWidget(dividerLine2)
-        shortcutsDisplayLayout.addWidget(shortcutHeading3)
-        shortcutsDisplayLayout.addWidget(shortcutLabel9)
+        shortcutsDisplayLayout.addWidget(self.shortcutHeading1)
+        shortcutsDisplayLayout.addWidget(self.shortcutLabel1)
+        shortcutsDisplayLayout.addWidget(self.shortcutLabel2)
+        shortcutsDisplayLayout.addWidget(self.shortcutLabel3)
+        shortcutsDisplayLayout.addWidget(self.shortcutLabel4)
+        shortcutsDisplayLayout.addWidget(self.shortcutLabel5)
+        shortcutsDisplayLayout.addWidget(self.shortcutLabel6)
+        shortcutsDisplayLayout.addWidget(self.shortcutLabel7)
+        shortcutsDisplayLayout.addWidget(self.dividerLine1)
+        shortcutsDisplayLayout.addWidget(self.shortcutHeading2)
+        shortcutsDisplayLayout.addWidget(self.shortcutLabel8)
+        shortcutsDisplayLayout.addWidget(self.dividerLine2)
+        shortcutsDisplayLayout.addWidget(self.shortcutHeading3)
+        shortcutsDisplayLayout.addWidget(self.shortcutLabel9)
 
-        pageLayout.addWidget(backButton)
+        pageLayout.addWidget(self.backButton)
         pageLayout.addWidget(self.headingLabel)
         pageLayout.addWidget(pathCard)
-        pageLayout.addWidget(themeCard)
-        pageLayout.addWidget(shortcutsCard)
+        pageLayout.addWidget(self.themeCard)
+        pageLayout.addWidget(self.shortcutsCard)
 
         pageLayout.addStretch()
 
-        centralWidget = QWidget()
-        centralWidget.setLayout(pageLayout)
-        centralWidget.setStyleSheet(f'background-color: {themePrimary}; color: {font_color1};')
-        self.setCentralWidget(centralWidget)
+        self.centralWidget = QWidget()
+        self.centralWidget.setLayout(pageLayout)
+        self.setCentralWidget(self.centralWidget)
+        self.changeTheme(self.themeMenu.currentText()) # This is here so that QComboBox won't get activated before everything is setup
 
     def pathChanger(self):
         '''
@@ -421,9 +329,37 @@ class settingsWindow(QMainWindow):
         self.currencyEntry.clear()
 
     def changeTheme(self, newTheme):
-        with open('data/config.json', 'r') as f:
+        '''with open('data/config.json', 'r') as f:
             data = json.load(f)
             data['CurrentTheme'] = newTheme
 
         with open('data/config.json', 'w') as f:
-            json.dump(data, f, indent=4)
+            json.dump(data, f, indent=4)'''
+
+        self.themeManager.apply_theme(newTheme)
+
+    def refreshTheme(self):
+        self.headingLabel.setStyleSheet(self.headingLabelBaseStyle + self.themeManager.get_stylesheet("QLabel"))
+        self.backButton.setStyleSheet(self.backButtonBaseStyle + self.themeManager.get_stylesheet("QPushButton"))
+        self.exportBtn.setStyleSheet(self.exportBtnBaseStyle + self.themeManager.get_stylesheet("QPushButton"))
+        self.currencyEntry.setStyleSheet(self.currencyEntryBaseStyle + self.themeManager.get_stylesheet("QLineEdit"))
+        self.saveBtn.setStyleSheet(self.saveBtnBaseStyle + self.themeManager.get_stylesheet("QPushButton"))
+        self.themeCard.setStyleSheet(self.themeCardBaseStyle + self.themeManager.get_stylesheet("QFrame"))
+        self.themeLabel.setStyleSheet(self.themeManager.get_stylesheet("BorderDelete"))
+        self.themeMenu.setStyleSheet(self.themeMenuBaseStyle + self.themeManager.get_stylesheet("QComboBox"))
+        self.shortcutsCard.setStyleSheet(self.shortcutsCardBaseStyle + self.themeManager.get_stylesheet("QFrame"))
+        self.shortcutHeading1.setStyleSheet(self.shortcutHeading1BaseStyle + self.themeManager.get_stylesheet("QLabel") + self.themeManager.get_stylesheet("BorderDelete3px"))
+        self.shortcutLabel1.setStyleSheet(self.shortcutLabel1BaseStyle + self.themeManager.get_stylesheet("QLabel") + self.themeManager.get_stylesheet("BorderDelete1px"))
+        self.shortcutLabel2.setStyleSheet(self.shortcutLabel2BaseStyle + self.themeManager.get_stylesheet("QLabel") + self.themeManager.get_stylesheet("BorderDelete1px"))
+        self.shortcutLabel3.setStyleSheet(self.shortcutLabel3BaseStyle + self.themeManager.get_stylesheet("QLabel") + self.themeManager.get_stylesheet("BorderDelete1px"))
+        self.shortcutLabel4.setStyleSheet(self.shortcutLabel4BaseStyle + self.themeManager.get_stylesheet("QLabel") + self.themeManager.get_stylesheet("BorderDelete1px"))
+        self.shortcutLabel5.setStyleSheet(self.shortcutLabel5BaseStyle + self.themeManager.get_stylesheet("QLabel") + self.themeManager.get_stylesheet("BorderDelete1px"))
+        self.shortcutLabel6.setStyleSheet(self.shortcutLabel6BaseStyle + self.themeManager.get_stylesheet("QLabel") + self.themeManager.get_stylesheet("BorderDelete1px"))
+        self.shortcutLabel7.setStyleSheet(self.shortcutLabel7BaseStyle + self.themeManager.get_stylesheet("QLabel") + self.themeManager.get_stylesheet("BorderDelete1px"))
+        self.shortcutHeading2.setStyleSheet(self.shortcutHeading2BaseStyle + self.themeManager.get_stylesheet("QLabel") + self.themeManager.get_stylesheet("BorderDelete1px"))
+        self.shortcutLabel8.setStyleSheet(self.shortcutLabel8BaseStyle + self.themeManager.get_stylesheet("QLabel") + self.themeManager.get_stylesheet("BorderDelete1px"))
+        self.shortcutHeading3.setStyleSheet(self.shortcutHeading3BaseStyle + self.themeManager.get_stylesheet("QLabel") + self.themeManager.get_stylesheet("BorderDelete1px"))
+        self.shortcutLabel9.setStyleSheet(self.shortcutLabel9BaseStyle + self.themeManager.get_stylesheet("QLabel") + self.themeManager.get_stylesheet("BorderDelete1px"))
+        self.dividerLine1.setStyleSheet(self.dividerLine1BaseStyle + self.themeManager.get_stylesheet("QLabel"))
+        self.dividerLine2.setStyleSheet(self.dividerLine2BaseStyle + self.themeManager.get_stylesheet("QLabel"))
+        self.centralWidget.setStyleSheet(self.themeManager.get_stylesheet("PrimaryASecondary"))
