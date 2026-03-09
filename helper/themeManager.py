@@ -80,26 +80,34 @@ class ThemeManager(QObject):
 
                 font_color0 = fontConfig['font-color0']
                 font_color1 = fontConfig['font-color1']
+                font_color2 = fontConfig['font-color2']
 
                 sortNormalBgColor = sortConfig["bgcolor"]
-        if type == 'QLabel':
-            return f'''
-                color: {font_color0};
-            '''
 
-        elif type == 'QFrame':
+        if type == 'QFrame':
             return f'''
-                background-color: {themeSecondary};
-                border: 3px solid {font_color0};
-                color: {font_color0};
-            '''
+                        background-color: {themeSecondary};
+                        border: 3px solid {font_color0};
+                        color: {font_color0};
+                    '''
+
+        elif type == 'Toolbar':
+            return f'''
+                        background-color: {font_color0};
+                        color: {font_color2}
+                    '''
+
+        elif type == 'QLabel':
+            return f'''
+                        color: {font_color0};
+                    '''
 
         elif type == 'QComboBox':
             return f'''
-                color: {font_color0};
-                border: 2px solid {font_color0};
-                background-color: {sortNormalBgColor};
-            '''
+                        color: {font_color0};
+                        border: 2px solid {font_color0};
+                        background-color: {sortNormalBgColor};
+                    '''
 
         elif type == 'PrimaryASecondary':
             return f'''
@@ -109,34 +117,37 @@ class ThemeManager(QObject):
 
         elif type == 'QPushButton':
             return f'''
-                QPushButton {{
-                    background-color: {buttonBgColor};
-                    color: {buttonColor};
-                }}
-                QPushButton:hover {{
-                    background-color: {buttonHoverBgColor};
-                }}
-                QPushButton:pressed {{
-                    background-color: {buttonClickedBgColor};
-                }}
-            '''
+                        QPushButton {{
+                            background-color: {buttonBgColor};
+                            color: {buttonColor};
+                        }}
+                        QPushButton:hover {{
+                            background-color: {buttonHoverBgColor};
+                        }}
+                        QPushButton:pressed {{
+                            background-color: {buttonClickedBgColor};
+                        }}
+                    '''
 
         elif type == 'QLineEdit':
             return f'''
-                QLineEdit {{
-                    background-color: {entryBgColor};
-                    border: 2px solid {entryColor};
-                }}
-                QLineEdit:focus {{
-                    border: 2px solid {entryBorderColor};
-                }}
-                QLineEdit:hover {{
-                    border: 2px solid {entryBorderColor};
-                }}
-            '''
+                        QLineEdit {{
+                            background-color: {entryBgColor};
+                            border: 2px solid {entryColor};
+                        }}
+                        QLineEdit:focus {{
+                            border: 2px solid {entryBorderColor};
+                        }}
+                        QLineEdit:hover {{
+                            border: 2px solid {entryBorderColor};
+                        }}
+                    '''
 
         elif type == 'BorderDelete1px':
             return f'border: 1px solid {themeSecondary};'
 
         elif type == 'BorderDelete3px':
             return f'border: 3px solid {themeSecondary};'
+
+        elif type == 'font_color1':
+            return f'color: {font_color1};'
