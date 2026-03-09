@@ -9,6 +9,7 @@ Fund Track is personal finance manager program that is built using Python. It ca
 - Budget Setting
 - Automatic .txt finance report exporting
 - Changeable currency symbol
+- Dark theme and Light theme
 - Shortcuts to open each function of the program and to close it
 
 ## Demo
