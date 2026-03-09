@@ -47,6 +47,7 @@ class settingsWindow(QMainWindow):
         # Theme
         with open('data/config.json', 'r') as f:
             data = json.load(f)
+            currentTheme = data['CurrentTheme']
             themes = []
             for i in data['Themes'][0].keys():
                 themes.append(i)
@@ -345,7 +346,7 @@ class settingsWindow(QMainWindow):
         self.currencyEntry.setStyleSheet(self.currencyEntryBaseStyle + self.themeManager.get_stylesheet("QLineEdit"))
         self.saveBtn.setStyleSheet(self.saveBtnBaseStyle + self.themeManager.get_stylesheet("QPushButton"))
         self.themeCard.setStyleSheet(self.themeCardBaseStyle + self.themeManager.get_stylesheet("QFrame"))
-        self.themeLabel.setStyleSheet(self.themeManager.get_stylesheet("BorderDelete"))
+        self.themeLabel.setStyleSheet(self.themeManager.get_stylesheet("BorderDelete3px"))
         self.themeMenu.setStyleSheet(self.themeMenuBaseStyle + self.themeManager.get_stylesheet("QComboBox"))
         self.shortcutsCard.setStyleSheet(self.shortcutsCardBaseStyle + self.themeManager.get_stylesheet("QFrame"))
         self.shortcutHeading1.setStyleSheet(self.shortcutHeading1BaseStyle + self.themeManager.get_stylesheet("QLabel") + self.themeManager.get_stylesheet("BorderDelete3px"))
