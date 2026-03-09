@@ -16,6 +16,7 @@ from PySide6.QtCore import Qt, Signal
 from data.database import DBmanager
 from helper.barchartMatplotlib import initiation, plot_bar_chart
 from helper.HPrefresher import summaryCardRefresher, transactionHistoryRefresher, greetingRefresh, barchartRefresher
+from helper.themeManager import ThemeManager
 
 # json to write and read json files
 import json
@@ -90,19 +91,21 @@ class MainWindow(QMainWindow):
                 font_color0 = fontConfig['font-color0']
                 font_color1 = fontConfig['font-color1']
 
+            self.themeManager = ThemeManager()
+            self.themeManager.themeChanged.connect(self.refreshTheme)
+
 
         # Toolbar options
-        toolbar = QToolBar("Main Toolbar", self)
-        self.addToolBar(toolbar)
-        toolbar.setMovable(False)
-        toolbar.setStyleSheet(f'''
-            Background-color: {buttonBgColor};
+        self.toolbar = QToolBar("Main Toolbar", self)
+        self.addToolBar(self.toolbar)
+        self.toolbar.setMovable(False)
+        self.toolbarBaseStyle = '''
             font-size: 20px;
             border-radius: 15px;
             margin: 5px;
             padding-top: 5px;
-        ''')
-        toolbar.setToolButtonStyle(Qt.ToolButtonTextUnderIcon)
+        '''
+        self.toolbar.setToolButtonStyle(Qt.ToolButtonTextUnderIcon)
 
         '''
         1. Icon and text for the option
@@ -111,37 +114,37 @@ class MainWindow(QMainWindow):
         4. Adding shortcut key to the option
         '''
         action_add = QAction(QIcon('img/refresh_icon.png'),"Refresh", self)
-        toolbar.addAction(action_add)
+        self.toolbar.addAction(action_add)
         action_add.triggered.connect(self.refresh_Signal.emit)
         action_add.setShortcut(QKeySequence('Ctrl+R'))
 
         action_add = QAction(QIcon('img/more_icon.png'),"Add Transaction", self)
-        toolbar.addAction(action_add)
+        self.toolbar.addAction(action_add)
         action_add.triggered.connect(self.addTransaction_Signal.emit)
         action_add.setShortcut(QKeySequence('Alt+1'))
 
         action_add = QAction(QIcon('img/edit_icon(1).png'),"Edit Expense", self)
-        toolbar.addAction(action_add)
+        self.toolbar.addAction(action_add)
         action_add.triggered.connect(self.editExpense_Signal.emit)
         action_add.setShortcut(QKeySequence('Alt+2'))
 
         action_add = QAction(QIcon('img/edit_icon.png'),"Edit Income", self)
-        toolbar.addAction(action_add)
+        self.toolbar.addAction(action_add)
         action_add.triggered.connect(self.editIncome_Signal.emit)
         action_add.setShortcut(QKeySequence('Alt+3'))
 
         action_add = QAction(QIcon('img/history_icon.png'),"History", self)
-        toolbar.addAction(action_add)
+        self.toolbar.addAction(action_add)
         action_add.triggered.connect(self.history_Signal.emit)
         action_add.setShortcut(QKeySequence('Alt+4'))
 
         action_add = QAction(QIcon('img/user_icon.png'),"User", self)
         action_add.triggered.connect(self.user_Signal.emit)
-        toolbar.addAction(action_add)
+        self.toolbar.addAction(action_add)
         action_add.setShortcut(QKeySequence('Alt+5'))
 
         action_add = QAction(QIcon('img/settings_icon.png'),"Settings", self)
-        toolbar.addAction(action_add)
+        self.toolbar.addAction(action_add)
         action_add.triggered.connect(self.settings_Signal.emit)
         action_add.setShortcut(QKeySequence('Alt+6'))
 
@@ -152,13 +155,12 @@ class MainWindow(QMainWindow):
         '''
         self.headingLabel = QLabel("HomePage")
         self.headingLabel.setAlignment(Qt.AlignLeft)
-        self.headingLabel.setStyleSheet(f"""
+        self.headingLabelBaseStyle = """
             font-size: 36px;
             font-family: DejaVu Sans Mono;
             padding-top: 15px;
             padding-left: 10px;
-            color: {font_color0}
-        """)
+        """
 
         # Top row
         '''
@@ -169,60 +171,55 @@ class MainWindow(QMainWindow):
         greetingCard is the card in which the label with the greeting text shows in the window.
         greetingLayout is the layout of the greetingCard. The card greets the user whenever they enter the homepage.
         '''
-        summaryCard = QFrame() # Summary card
-        summaryCard.setFixedWidth(450)
-        summaryCard.setStyleSheet(f"""
-            background-color: {themeSecondary};
+        self.summaryCard = QFrame() # Summary card
+        self.summaryCard.setFixedWidth(450)
+        self.summaryCardBaseStyle = """
             font-family: Noto Sans Mono Thin;
             font-weight: bold;
             padding: 10px;
             border-radius: 20px;
             margin-left: 20px;
-        """)
+        """
 
         self.summaryLabel = QLabel('Summary')
-        self.summaryLabel.setStyleSheet(f"""
+        self.summaryLabelBaseStyle = """
             font-size: 28px;
-            color: {font_color1};
             font-weight: bold;
             margin-left: 30px;
             padding-top: 5px;
             margin-top: 20px;
-        """)
+        """
 
         self.budgetLabel = QLabel()
         self.budgetLabel.setAlignment(Qt.AlignTop)
-        self.budgetLabel.setStyleSheet(f'''
+        self.budgetLabelBaseStyle = '''
             font-size: 18px;
-            color: {font_color0};
-        ''')
+        '''
 
-        summaryLayout = QVBoxLayout(summaryCard)
+        summaryLayout = QVBoxLayout(self.summaryCard)
         summaryLayout.addWidget(self.summaryLabel)
         summaryLayout.addWidget(self.budgetLabel)
 
-        topRow.addWidget(summaryCard)
+        topRow.addWidget(self.summaryCard)
 
 
         # Card for Greeting
-        greetingCard = QFrame()
-        greetingCard.setFixedWidth(1050)
-        greetingCard.setFixedHeight(100)
-        greetingCard.setStyleSheet(f'''
+        self.greetingCard = QFrame()
+        self.greetingCard.setFixedWidth(1050)
+        self.greetingCard.setFixedHeight(100)
+        self.greetingCardBaseStyle = '''
             font-family: Caladea;
             font-weight: bold;
-            background-color: {themeSecondary};
-            color: {font_color1};
             font-size: 26px;
-            border-radius: 15px;''')
+            border-radius: 15px;'''
 
         self.greetingLabel = QLabel()
         self.greetingLabel.setAlignment(Qt.AlignCenter)
 
-        greetingLayout = QVBoxLayout(greetingCard)
+        greetingLayout = QVBoxLayout(self.greetingCard)
         greetingLayout.addWidget(self.greetingLabel)
 
-        topRow.addWidget(greetingCard)
+        topRow.addWidget(self.greetingCard)
 
         # Bottom row
         '''
@@ -235,44 +232,40 @@ class MainWindow(QMainWindow):
         The barchart is drawn using functions which are located in other file. Only the final data is being used
         in this file.
         '''
-        historyCard = QFrame()
-        historyCard.setFixedWidth(900)
-        historyCard.setStyleSheet(f'''
+        self.historyCard = QFrame()
+        self.historyCard.setFixedWidth(900)
+        self.historyCardBaseStyle = '''
             font-size: 22px;
-            color: {font_color1};
-            background-color: {themeSecondary};
             border-radius: 15px;
             margin-left: 20px;
             font-family: Noto Sans Mono Thin;
             font-weight: bold;
-            padding-bottom: 10px;
-            padding-right: 10px;
-        ''')
+            padding-bottom: 15px;
+            padding-right: 15px;
+        '''
 
         self.historyLabel = QLabel('Transaction History')
         self.historyLabel.setStyleSheet('padding-top: 10px;')
 
-        self.historyLayout = QVBoxLayout(historyCard)
+        self.historyLayout = QVBoxLayout(self.historyCard)
         self.historyLayout.addWidget(self.historyLabel)
 
         # Bar chart with Matplotlib
-        barCard = QFrame()
-        barCard.setFixedWidth(750)
-        barCard.setStyleSheet(f'''
-            background-color: {themeSecondary};
-            border: 2px solid {themeSecondary};
+        self.barCard = QFrame()
+        self.barCard.setFixedWidth(750)
+        self.barCardBaseStyle = '''
             border-radius: 20px;
-        ''')
+        '''
 
 
         self.figure, self.canvas = initiation()
         self.plt = plot_bar_chart(self.figure, self.canvas)
 
-        barLayout = QVBoxLayout(barCard)
+        barLayout = QVBoxLayout(self.barCard)
         barLayout.addWidget(self.canvas)
 
-        bottomRow.addWidget(historyCard)
-        bottomRow.addWidget(barCard)
+        bottomRow.addWidget(self.historyCard)
+        bottomRow.addWidget(self.barCard)
 
         pageLayout.addWidget(self.headingLabel)
         pageLayout.addLayout(topRow)
@@ -280,10 +273,9 @@ class MainWindow(QMainWindow):
 
         pageLayout.addStretch()
 
-        centralWidget = QWidget()
-        centralWidget.setLayout(pageLayout)
-        centralWidget.setStyleSheet(f'background-color: {themePrimary}; color: {font_color1};')
-        self.setCentralWidget(centralWidget)
+        self.centralWidget = QWidget()
+        self.centralWidget.setLayout(pageLayout)
+        self.setCentralWidget(self.centralWidget)
 
         self.refresh()
 
@@ -297,3 +289,16 @@ class MainWindow(QMainWindow):
         transactionHistoryRefresher(self.historyLayout)
         greetingRefresh(self.greetingLabel)
         barchartRefresher(self.plt, self.figure, self.canvas)
+        self.refreshTheme()
+
+    def refreshTheme(self):
+        self.toolbar.setStyleSheet(self.toolbarBaseStyle + self.themeManager.get_stylesheet("Toolbar"))
+        self.headingLabel.setStyleSheet(self.headingLabelBaseStyle + self.themeManager.get_stylesheet("QLabel"))
+        self.summaryCard.setStyleSheet(self.summaryCardBaseStyle + self.themeManager.get_stylesheet("QFrame"))
+        self.summaryLabel.setStyleSheet(self.summaryLabelBaseStyle + self.themeManager.get_stylesheet("font_color1") + self.themeManager.get_stylesheet("BorderDelete3px"))
+        self.budgetLabel.setStyleSheet(self.budgetLabelBaseStyle + self.themeManager.get_stylesheet("QLabel") + self.themeManager.get_stylesheet("BorderDelete3px"))
+        self.greetingCard.setStyleSheet(self.greetingCardBaseStyle + self.themeManager.get_stylesheet("QFrame") + self.themeManager.get_stylesheet("font_color1") + self.themeManager.get_stylesheet("BorderDelete3px"))
+        self.greetingLabel.setStyleSheet(self.themeManager.get_stylesheet("BorderDelete3px"))
+        self.historyCard.setStyleSheet(self.historyCardBaseStyle + self.themeManager.get_stylesheet("QFrame") + self.themeManager.get_stylesheet("font_color1") + self.themeManager.get_stylesheet("BorderDelete3px"))
+        self.barCard.setStyleSheet(self.barCardBaseStyle + self.themeManager.get_stylesheet("QFrame") + self.themeManager.get_stylesheet("BorderDelete3px"))
+        self.centralWidget.setStyleSheet(self.themeManager.get_stylesheet("PrimaryASecondary"))
