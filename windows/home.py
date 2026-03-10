@@ -79,17 +79,6 @@ class MainWindow(QMainWindow):
         with open('data/config.json', 'r') as f:
             data = json.load(f)
             currentTheme = data['CurrentTheme']
-            for i in data['Themes']:
-                themePrimary = i[currentTheme]['Primary']
-                themeSecondary = i[currentTheme]['Secondary']
-
-                buttonConfig = i[currentTheme]['Button']
-                buttonBgColor = buttonConfig['bgcolor']
-
-                fontConfig = i[currentTheme]["Font"]
-
-                font_color0 = fontConfig['font-color0']
-                font_color1 = fontConfig['font-color1']
 
             self.themeManager = ThemeManager()
             self.themeManager.themeChanged.connect(self.refreshTheme)
