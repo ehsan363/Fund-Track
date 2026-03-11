@@ -8,9 +8,6 @@ from PySide6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QLabel, QPushBu
 from PySide6.QtGui import QIcon, QFont, QKeySequence
 from PySide6.QtCore import Qt, Signal
 
-# Importing ThemeManager for changing themes
-from helper.themeManager import ThemeManager
-
 # json to read and write json file for the options selected
 import json
 
@@ -23,7 +20,7 @@ class settingsWindow(QMainWindow):
     '''
     goHome_Signal = Signal()
 
-    def __init__(self):
+    def __init__(self, ThemeManager):
         super().__init__()
         self.setWindowTitle('FundTrack')
 

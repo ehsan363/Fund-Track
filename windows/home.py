@@ -16,7 +16,6 @@ from PySide6.QtCore import Qt, Signal
 from data.database import DBmanager
 from helper.barchartMatplotlib import initiation, plot_bar_chart
 from helper.HPrefresher import summaryCardRefresher, transactionHistoryRefresher, greetingRefresh, barchartRefresher
-from helper.themeManager import ThemeManager
 
 # json to write and read json files
 import json
@@ -38,7 +37,7 @@ class MainWindow(QMainWindow):
     user_Signal = Signal()
     settings_Signal = Signal()
 
-    def __init__(self):
+    def __init__(self, ThemeManager):
         super().__init__()
         self.setWindowTitle('FundTrack')
 
@@ -80,8 +79,8 @@ class MainWindow(QMainWindow):
             data = json.load(f)
             currentTheme = data['CurrentTheme']
 
-            self.themeManager = ThemeManager()
-            self.themeManager.themeChanged.connect(self.refreshTheme)
+        self.themeManager = ThemeManager()
+        self.themeManager.themeChanged.connect(self.refreshTheme)
 
 
         # Toolbar options
