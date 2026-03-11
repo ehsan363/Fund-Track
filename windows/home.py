@@ -261,9 +261,12 @@ class MainWindow(QMainWindow):
 
         pageLayout.addStretch()
 
-        self.centralWidget = QWidget()
-        self.centralWidget.setLayout(pageLayout)
-        self.setCentralWidget(self.centralWidget)
+        '''
+            mainWidget is one in which all the elements that should be in the central widget is added
+        '''
+        self.mainWidget = QWidget()
+        self.mainWidget.setLayout(pageLayout)
+        self.setCentralWidget(self.mainWidget)
 
         self.refresh()
 
@@ -280,6 +283,9 @@ class MainWindow(QMainWindow):
         self.refreshTheme()
 
     def refreshTheme(self):
+        '''
+            Function to refresh the theme color values of every element in this window using the class ThemeManager.
+        '''
         self.toolbar.setStyleSheet(self.toolbarBaseStyle + self.themeManager.get_stylesheet("Toolbar"))
         self.headingLabel.setStyleSheet(self.headingLabelBaseStyle + self.themeManager.get_stylesheet("QLabel"))
         self.summaryCard.setStyleSheet(self.summaryCardBaseStyle + self.themeManager.get_stylesheet("QFrame"))
@@ -289,4 +295,4 @@ class MainWindow(QMainWindow):
         self.greetingLabel.setStyleSheet(self.themeManager.get_stylesheet("BorderDelete3px"))
         self.historyCard.setStyleSheet(self.historyCardBaseStyle + self.themeManager.get_stylesheet("QFrame") + self.themeManager.get_stylesheet("font_color1") + self.themeManager.get_stylesheet("BorderDelete3px"))
         self.barCard.setStyleSheet(self.barCardBaseStyle + self.themeManager.get_stylesheet("QFrame") + self.themeManager.get_stylesheet("BorderDelete3px"))
-        self.centralWidget.setStyleSheet(self.themeManager.get_stylesheet("PrimaryASecondary"))
+        self.mainWidget.setStyleSheet(self.themeManager.get_stylesheet("PrimaryASecondary"))

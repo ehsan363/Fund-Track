@@ -291,9 +291,12 @@ class settingsWindow(QMainWindow):
 
         pageLayout.addStretch()
 
-        self.centralWidget = QWidget()
-        self.centralWidget.setLayout(pageLayout)
-        self.setCentralWidget(self.centralWidget)
+        '''
+            mainWidget is one in which all the elements that should be in the central widget is added
+        '''
+        self.mainWidget = QWidget()
+        self.mainWidget.setLayout(pageLayout)
+        self.setCentralWidget(self.mainWidget)
         self.changeTheme(self.themeMenu.currentText()) # This is here so that QComboBox won't get activated before everything is setup
 
     def pathChanger(self):
@@ -360,4 +363,4 @@ class settingsWindow(QMainWindow):
         self.shortcutLabel9.setStyleSheet(self.shortcutLabel9BaseStyle + self.themeManager.get_stylesheet("QLabel") + self.themeManager.get_stylesheet("BorderDelete1px"))
         self.dividerLine1.setStyleSheet(self.dividerLine1BaseStyle + self.themeManager.get_stylesheet("QLabel"))
         self.dividerLine2.setStyleSheet(self.dividerLine2BaseStyle + self.themeManager.get_stylesheet("QLabel"))
-        self.centralWidget.setStyleSheet(self.themeManager.get_stylesheet("PrimaryASecondary"))
+        self.mainWidget.setStyleSheet(self.themeManager.get_stylesheet("PrimaryASecondary"))

@@ -20,7 +20,7 @@ class userWindow(QMainWindow):
     '''
     goHome_Signal = Signal()
 
-    def __init__(self):
+    def __init__(self, ThemeManager):
         super().__init__()
 
         # Window settings
@@ -42,83 +42,55 @@ class userWindow(QMainWindow):
         pageLayout.setSpacing(35)
 
         # UI elements
+        '''
+            mainWidget is one in which all the elements that should be in the central widget is added
+        '''
+        self.mainWidget = QWidget()
+        self.mainWidget.setLayout(pageLayout)
+        self.setCentralWidget(self.mainWidget)
+
         # Theme
         with open('data/config.json', 'r') as f:
             data = json.load(f)
             currentTheme = data['CurrentTheme']
-            for i in data['Themes']:
-                themePrimary = i[currentTheme]['Primary']
-                themeSecondary = i[currentTheme]['Secondary']
 
-                buttonConfig = i[currentTheme]['Button']
-                entryConfig = i[currentTheme]['Entry']
-                fontConfig = i[currentTheme]["Font"]
-
-                buttonBgColor = buttonConfig['bgcolor']
-                buttonHoverBgColor = buttonConfig['hoverbgcolor']
-                buttonClickedBgColor = buttonConfig['clickbgcolor']
-                buttonColor = buttonConfig['color']
-
-                entryBgColor = entryConfig['bgcolor']
-                entryColor = entryConfig['color']
-                entryBorderColor = entryConfig['bordercolor']
-
-                font_color0 = fontConfig['font-color0']
-                font_color1 = fontConfig['font-color1']
+        self.themeManager = ThemeManager()
+        self.themeManager.themeChanged.connect(self.refreshTheme)
 
         # Heading
         self.headingLabel = QLabel("""User
 ──────────────────────────────────────────────────────────────────────────────────────────""")
         self.headingLabel.setAlignment(Qt.AlignLeft)
-        self.headingLabel.setStyleSheet(f"""
+        self.headingLabelBaseStyle = """
             font-size: 36px;
             font-family: DejaVu Sans Mono;
             padding-top: 15px;
             padding-left: 10px;
-            color: {font_color0}
-        """)
+        """
 
         # Back button to return to Homepage
-        backButton = QPushButton(QIcon('img/back_icon.png'), 'Back')
-        backButton.setShortcut(QKeySequence('Ctrl+W')) # Shortcut key instead of pressing the button
-        backButton.setStyleSheet(f'''
-        QPushButton {{
-            background-color: {buttonBgColor};
-            color: {buttonColor};
-            padding: 10px 20px 10px 20px;
-            border-radius: 8px;
-            font-size: 16px;
-            text-align: left;
-        }}
-        QPushButton:hover {{
-            background-color: {buttonHoverBgColor};
-        }}
-        QPushButton:pressed {{
-            background-color: {buttonClickedBgColor};
-        }}
-        ''')
-        backButton.clicked.connect(self.goHome_Signal.emit)
+        self.backButton = QPushButton(QIcon('img/back_icon.png'), 'Back')
+        self.backButton.setShortcut(QKeySequence('Ctrl+W')) # Shortcut key instead of pressing the button
+        self.backButtonBaseStyle = '''
+            QPushButton {
+                padding: 10px 20px 10px 20px;
+                border-radius: 8px;
+                font-size: 16px;
+                text-align: left;
+            }
+        '''
+        self.backButton.clicked.connect(self.goHome_Signal.emit)
 
         # Entry to enter the new name
         self.enterName = QLineEdit()
         self.enterName.setPlaceholderText('Enter Your Name')
-        self.enterName.setStyleSheet(f"""
-            QLineEdit {{
-                background-color: {entryBgColor};
-                color: {font_color1};
-                border: 2px solid {entryColor};
+        self.enterNameBaseStyle = """
+            QLineEdit {
                 border-radius: 8px;
                 padding: 8px 12px;
                 font-size: 14px;
-            }}
-            QLineEdit:hover {{
-                border-color: {entryBorderColor};
-            }}
-            QLineEdit:focus {{
-                border-color: {entryBorderColor};
-                background-color: {entryBgColor};
-            }}
-        """)
+            }
+        """
 
         # Entry to enter the new budget
         self.budgetEntry = QDoubleSpinBox()
@@ -131,61 +103,36 @@ class userWindow(QMainWindow):
             data = json.load(f)
             currencySuffix = f' {data["CurrencySuffix"]}'
         self.budgetEntry.setSuffix(currencySuffix)
-        self.budgetEntry.setStyleSheet(f'''
-            QDoubleSpinBox {{
-                background-color: {entryBgColor};
-                color: {font_color1};
-                border: 2px solid {entryColor};
+        self.budgetEntryBaseStyle = '''
+            QDoubleSpinBox {
                 border-radius: 8px;
                 padding: 6px 10px;
                 font-size: 16px;
-            }}
-            
-            QDoubleSpinBox:hover {{
-                border: 2px solid {entryBorderColor};
-            }}
-            
-            QDoubleSpinBox:focus {{
-                border: 2px solid {entryBorderColor};
-            }}
-            
-            ''')
+            }
+        '''
 
         # Enter button to save the entered data
-        submitBtn = QPushButton('Enter')
-        submitBtn.setStyleSheet(f'''
-            QPushButton {{
-                background-color: {buttonBgColor};
-                color: black;
+        self.submitBtn = QPushButton('Enter')
+        self.submitBtnBaseStyle = '''
+            QPushButton {
                 padding: 10px 20px 10px 20px;
                 border-radius: 8px;
-                border: 2px solid black;
                 font-size: 18px;
                 text-align: left;
-            }}
-            QPushButton:hover {{
-                background-color: {buttonHoverBgColor};
-            }}
-            QPushButton:pressed {{
-                background-color: {buttonClickedBgColor};
-            }}
-            ''')
-        submitBtn.clicked.connect(self.changeName)
+            }
+        '''
+        self.submitBtn.clicked.connect(self.changeName)
 
         # Adding each element to the main page layout
-        pageLayout.addWidget(backButton)
+        pageLayout.addWidget(self.backButton)
         pageLayout.addWidget(self.headingLabel)
         pageLayout.addWidget(self.enterName)
         pageLayout.addWidget(self.budgetEntry)
-        pageLayout.addWidget(submitBtn)
+        pageLayout.addWidget(self.submitBtn)
+        self.refreshTheme()
 
 
         pageLayout.addStretch()
-
-        centralWidget = QWidget()
-        centralWidget.setLayout(pageLayout)
-        centralWidget.setStyleSheet(f'background-color: {themePrimary}; color: {font_color1};')
-        self.setCentralWidget(centralWidget)
 
     def changeName(self):
         '''
@@ -210,3 +157,15 @@ class userWindow(QMainWindow):
             with open('data/config.json', 'w') as f:
                 json.dump(data, f, indent=4)
         self.goHome_Signal.emit()
+
+
+    def refreshTheme(self):
+        '''
+            Function to refresh the theme color values of every element in this window using the class ThemeManager.
+        '''
+        self.headingLabel.setStyleSheet(self.headingLabelBaseStyle + self.themeManager.get_stylesheet("QLabel"))
+        self.backButton.setStyleSheet(self.backButtonBaseStyle + self.themeManager.get_stylesheet("QPushButton"))
+        self.enterName.setStyleSheet(self.enterNameBaseStyle + self.themeManager.get_stylesheet("QLineEdit") + self.themeManager.get_stylesheet("font_color1"))
+        self.budgetEntry.setStyleSheet(self.budgetEntryBaseStyle + self.themeManager.get_stylesheet("QDoubleSpinBox") + self.themeManager.get_stylesheet("font_color1"))
+        self.submitBtn.setStyleSheet(self.submitBtnBaseStyle + self.themeManager.get_stylesheet("QPushButton"))
+        self.mainWidget.setStyleSheet(self.themeManager.get_stylesheet("PrimaryASecondary"))

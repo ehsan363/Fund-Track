@@ -143,6 +143,20 @@ class ThemeManager(QObject):
                         }}
                     '''
 
+        elif type == 'QDoubleSpinBox':
+            return f'''
+                        QDoubleSpinBox {{
+                            background-color: {entryBgColor};
+                            border: 2px solid {entryColor};
+                        }}
+                        QDoubleSpinBox:focus {{
+                            border: 2px solid {entryBorderColor};
+                        }}
+                        QDoubleSpinBox:hover {{
+                            border: 2px solid {entryBorderColor};
+                        }}
+                    '''
+
         elif type == 'BorderDelete1px':
             return f'border: 1px solid {themeSecondary};'
 
