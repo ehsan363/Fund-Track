@@ -14,6 +14,7 @@ from windows.history import historyWindow
 from windows.user import userWindow
 from windows.settings import settingsWindow
 from helper.reportGenerator import monthlyReport
+from helper.themeManager import ThemeManager
 
 
 class AppController:
@@ -25,7 +26,7 @@ class AppController:
     - Refreshing homepage
     '''
     def __init__(self):
-        self.window = MainWindow()
+        self.window = MainWindow(ThemeManager)
 
         # Taskbar Buttons with functions linked
         self.window.refresh_Signal.connect(self.refresh)
@@ -67,7 +68,7 @@ class AppController:
             3. Show the subwindow
             4, hide the Homepage (main window)
         '''
-        self.sub_window = addTransactionWindow()
+        self.sub_window = addTransactionWindow(ThemeManager)
         self.sub_window.goHome_Signal.connect(self.go_home)
         self.sub_window.show()
         self.window.hide()
@@ -94,7 +95,7 @@ class AppController:
             3. Show the subwindow
             4, hide the Homepage (main window)
         '''
-        self.sub_window = editIncomeWindow()
+        self.sub_window = editIncomeWindow(ThemeManager)
         self.sub_window.goHome_Signal.connect(self.go_home)
         self.sub_window.show()
         self.window.hide()
@@ -107,7 +108,7 @@ class AppController:
             3. Show the subwindow
             4, hide the Homepage (main window)
         '''
-        self.sub_window = historyWindow()
+        self.sub_window = historyWindow(ThemeManager)
         self.sub_window.goHome_Signal.connect(self.go_home)
         self.sub_window.show()
         self.window.hide()
@@ -120,7 +121,7 @@ class AppController:
             3. Show the subwindow
             4, hide the Homepage (main window)
         '''
-        self.sub_window = userWindow()
+        self.sub_window = userWindow(ThemeManager)
         self.sub_window.goHome_Signal.connect(self.go_home)
         self.sub_window.show()
         self.window.hide()
@@ -133,7 +134,7 @@ class AppController:
             3. Show the subwindow
             4, hide the Homepage (main window)
         '''
-        self.sub_window = settingsWindow()
+        self.sub_window = settingsWindow(ThemeManager)
         self.sub_window.goHome_Signal.connect(self.go_home)
         self.sub_window.show()
         self.window.hide()
