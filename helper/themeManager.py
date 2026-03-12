@@ -166,3 +166,76 @@ class ThemeManager(QObject):
 
         elif type == 'font_color1':
             return f'color: {font_color1};'
+
+        elif type == 'QDateEdit':
+            return f'''
+                        QDateEdit {{
+                            background-color: {entryBgColor};
+                            border: 2px solid {entryColor};
+                            border-radius: 8px;
+                            padding: 6px 10px;
+                            font-size: 14px;
+                        }}
+                        
+                        QDateEdit:hover {{
+                            border: 2px solid {entryBorderColor};
+                        }}
+                        
+                        QDateEdit:focus {{
+                            border: 2px solid {entryBorderColor};
+                        }}
+                        
+                        QDateEdit::drop-down {{
+                            subcontrol-origin: padding;
+                            subcontrol-position: top right;
+                            width: 24px;
+                            border-left: 2px solid {entryBorderColor};
+                        }}
+                        
+                        QDateEdit::down-arrow {{
+                            image: url(themes/{currentTheme}/down_icon.png);
+                            width: 14px;
+                            height: 14px;
+                        }}
+                        
+                        QCalendarWidget QToolButton#qt_calendar_prevmonth {{
+                            qproperty-icon: url(themes/{currentTheme}/chevron-left.png);
+                            qproperty-iconSize: 16px;
+                        }}
+                        
+                        QCalendarWidget QToolButton#qt_calendar_nextmonth {{
+                            qproperty-icon: url(themes/{currentTheme}/chevron-right.png);
+                            qproperty-iconSize: 16px;
+                        }}
+                        
+                        QCalendarWidget QAbstractItemView {{
+                           font-size: 16px;
+                        }}
+                    '''
+
+        elif type == 'QCheckBox':
+            return f'''
+                        QCheckBox {{
+                            spacing: 10px;
+                            font-size: 14px;
+                            color: {font_color0};
+                            font-family: Adwaita mono;
+                        }}
+                        
+                        QCheckBox::indicator {{
+                            width: 20px;
+                            height: 20px;
+                        }}
+                        
+                        QCheckBox::indicator:unchecked {{
+                            border: 2px solid {font_color0};
+                            background: {themeSecondary};
+                            border-radius: 4px;
+                        }}
+                        
+                        QCheckBox::indicator:checked {{
+                            border: 2px solid {font_color1};
+                            border-radius: 4px;
+                            background-color: {font_color0};
+                        }}
+                    '''
