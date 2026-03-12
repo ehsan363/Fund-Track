@@ -134,6 +134,7 @@ class ThemeManager(QObject):
                         QLineEdit {{
                             background-color: {entryBgColor};
                             border: 2px solid {entryColor};
+                            color: {font_color0};
                         }}
                         QLineEdit:focus {{
                             border: 2px solid {entryBorderColor};
