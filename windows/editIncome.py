@@ -29,7 +29,7 @@ class editIncomeWindow(QMainWindow):
     '''
     goHome_Signal = Signal()
 
-    def __init__(self):
+    def __init__(self, ThemeManager):
         super().__init__()
         self.setWindowTitle('FundTrack') # Title of the window
 
@@ -45,59 +45,43 @@ class editIncomeWindow(QMainWindow):
         font.setBold(True)
 
         # Layout
-        centralWidget = QWidget()
-        self.setCentralWidget(centralWidget)
-        pageLayout = QVBoxLayout(centralWidget)
+        pageLayout = QVBoxLayout()
         pageLayout.setAlignment(Qt.AlignTop)
         pageLayout.setSpacing(35)
 
         topRow = QHBoxLayout()
         topRow.setAlignment(Qt.AlignLeft)
 
-        '''
-        headingLabel is label for to display the heading of the window
-        '''
+
         # UI elements
+        '''
+            mainWidget is one in which all the elements that should be in the central widget is added
+        '''
+        self.mainWidget = QWidget()
+        self.mainWidget.setLayout(pageLayout)
+        self.setCentralWidget(self.mainWidget)
+
         # Theme
         with open('data/config.json', 'r') as f:
             data = json.load(f)
             currentTheme = data['CurrentTheme']
-            for i in data['Themes']:
-                themePrimary = i[currentTheme]['Primary']
-                themeSecondary = i[currentTheme]['Secondary']
 
-                buttonConfig = i[currentTheme]['Button']
-                entryConfig = i[currentTheme]['Entry']
-                fontConfig = i[currentTheme]["Font"]
-                sortConfig = i[currentTheme]["Sortmenu"]
+        self.themeManager = ThemeManager()
+        self.themeManager.themeChanged.connect(self.refreshTheme)
 
-                buttonBgColor = buttonConfig['bgcolor']
-                buttonHoverBgColor = buttonConfig['hoverbgcolor']
-                buttonClickedBgColor = buttonConfig['clickbgcolor']
-                buttonColor = buttonConfig['color']
-
-                entryBgColor = entryConfig['bgcolor']
-                entryColor = entryConfig['color']
-                entryBorderColor = entryConfig['bordercolor']
-
-                font_color0 = fontConfig['font-color0']
-                font_color1 = fontConfig['font-color1']
-                font_color2 = fontConfig['font-color2']
-
-                sortNormalBorder = sortConfig["border"]
-                sortNormalBgColor = sortConfig["bgcolor"]
-
+        '''
+            headingLabel is label for to display the heading of the window
+        '''
         # Heading
         self.headingLabel = QLabel("""Edit Income
 ──────────────────────────────────────────────────────────────────────────────────────────""")
         self.headingLabel.setAlignment(Qt.AlignLeft)
-        self.headingLabel.setStyleSheet(f"""
+        self.headingLabelBaseStyle = """
             font-size: 36px;
             font-family: DejaVu Sans Mono;
             padding-top: 15px;
             padding-left: 10px;
-            color: {font_color0}
-        """)
+        """
 
 
         '''
@@ -109,165 +93,114 @@ class editIncomeWindow(QMainWindow):
         buttonCard = QFrame()
         buttonCardLayout = QHBoxLayout(buttonCard)
 
-        backButton = QPushButton(QIcon('img/back_icon.png'), 'Back')
-        backButton.setShortcut(QKeySequence('Ctrl+W'))
-        backButton.setStyleSheet(f'''
-            QPushButton {{
-                background-color: {buttonBgColor};
-                color: {buttonColor};
+        self.backButton = QPushButton(QIcon('img/back_icon.png'), 'Back')
+        self.backButton.setShortcut(QKeySequence('Ctrl+W'))
+        self.backButtonBaseStyle = '''
+            QPushButton {
                 padding: 10px 20px 10px 20px;
                 border-radius: 8px;
                 font-size: 16px;
                 text-align: left;
-            }}
-            QPushButton:hover {{
-                background-color: {buttonHoverBgColor};
-            }}
-            QPushButton:pressed {{
-                background-color: {buttonClickedBgColor};
-            }}
-            ''')
-        backButton.clicked.connect(self.goHome_Signal.emit)
+            }
+            '''
+
+        self.backButton.clicked.connect(self.goHome_Signal.emit)
 
         '''
         deleteButton is a button that has the function linked to delete transactions that are selected.
         '''
-        deleteButton = QPushButton(QIcon('img/bin_icon.png'), 'Delete')
-        deleteButton.setIconSize(QSize(18, 18))
-        deleteButton.setShortcut(QKeySequence('Ctrl+D'))
-        deleteButton.setStyleSheet(f'''
-            QPushButton {{
-                background-color: {buttonBgColor};
-                color: {buttonColor};
+        self.deleteButton = QPushButton(QIcon('img/bin_icon.png'), 'Delete')
+        self.deleteButton.setIconSize(QSize(18, 18))
+        self.deleteButton.setShortcut(QKeySequence('Ctrl+D'))
+        self.deleteButtonBaseStyle = '''
+            QPushButton {
                 padding: 10px 20px 10px 20px;
                 border-radius: 8px;
                 font-size: 18px;
                 text-align: left;
-            }}
-            QPushButton:hover {{
-                background-color: {buttonHoverBgColor};
-            }}
-            QPushButton:pressed {{
-                background-color: {buttonClickedBgColor};
-            }}
-            ''')
-        deleteButton.clicked.connect(lambda: self.handleSelected('del'))
+            }
+        '''
+
+        self.deleteButton.clicked.connect(lambda: self.handleSelected('del'))
 
         '''
         changeAmountButton allows the user to change the amount of the transactions that are selected.
         '''
-        changeAmountButton = QPushButton(QIcon('img/editAmount_icon.png'), 'Change Amount')
-        changeAmountButton.setIconSize(QSize(22, 22))
-        changeAmountButton.setStyleSheet(f'''
-            QPushButton {{
-                background-color: {buttonBgColor};
-                color: {buttonColor};
+        self.changeAmountButton = QPushButton(QIcon('img/editAmount_icon.png'), 'Change Amount')
+        self.changeAmountButton.setIconSize(QSize(22, 22))
+        self.changeAmountButtonBaseStyle = '''
+            QPushButton {
                 padding: 10px 20px 10px 20px;
                 border-radius: 8px;
                 font-size: 18px;
                 text-align: left;
-            }}
-            QPushButton:hover {{
-                background-color: {buttonHoverBgColor};
-            }}
-            QPushButton:pressed {{
-                background-color: {buttonClickedBgColor};
-            }}
-            ''')
-        changeAmountButton.clicked.connect(lambda: self.handleSelected('chAmnt'))
+            }
+            '''
+
+        self.changeAmountButton.clicked.connect(lambda: self.handleSelected('chAmnt'))
 
         '''
         changeTypeButton allows the user to change the type of transaction for the transactions selected.
         The type will be changed to the opposite type with instantly with nothing else to do.
         '''
-        changeTypeButton = QPushButton(QIcon('img/changeType_icon.png'), 'Change Type')
-        changeTypeButton.setIconSize(QSize(26, 26))
-        changeTypeButton.setStyleSheet(f'''
-            QPushButton {{
-                background-color: {buttonBgColor};
-                color: {buttonColor};
+        self.changeTypeButton = QPushButton(QIcon('img/changeType_icon.png'), 'Change Type')
+        self.changeTypeButton.setIconSize(QSize(26, 26))
+        self.changeTypeButtonBaseStyle = '''
+            QPushButton {
                 padding: 10px 20px 10px 20px;
                 border-radius: 8px;
                 font-size: 18px;
                 text-align: left;
-            }}
-            QPushButton:hover {{
-                background-color: {buttonHoverBgColor};
-            }}
-            QPushButton:pressed {{
-                background-color: {buttonClickedBgColor};
-            }}
-            ''')
-        changeTypeButton.clicked.connect(lambda: self.handleSelected('chType'))
+            }
+            '''
+        self.changeTypeButton.clicked.connect(lambda: self.handleSelected('chType'))
 
         '''
         changeCategoryButton allows the user to change the category of the transactions selected.
         '''
-        changeCategoryButton = QPushButton(QIcon('img/changeCategory_icon.png'), 'Change Category')
-        changeCategoryButton.setIconSize(QSize(26, 26))
-        changeCategoryButton.setStyleSheet(f'''
-            QPushButton {{
-                background-color: {buttonBgColor};
-                color: {buttonColor};
+        self.changeCategoryButton = QPushButton(QIcon('img/changeCategory_icon.png'), 'Change Category')
+        self.changeCategoryButton.setIconSize(QSize(26, 26))
+        self.changeCategoryButtonBaseStyle = '''
+            QPushButton {
                 padding: 10px 20px 10px 20px;
                 border-radius: 8px;
                 font-size: 18px;
                 text-align: left;
-            }}
-            QPushButton:hover {{
-                background-color: {buttonHoverBgColor};
-            }}
-            QPushButton:pressed {{
-                background-color: {buttonClickedBgColor};
-            }}
-            ''')
-        changeCategoryButton.clicked.connect(lambda: self.handleSelected('chCate'))
+            }
+            '''
+        self.changeCategoryButton.clicked.connect(lambda: self.handleSelected('chCate'))
 
         '''
         changeDateButton allows the user to change the date of the transactions that are selected.
         '''
-        changeDateButton = QPushButton(QIcon('img/changeDate_icon.png'), 'Change Date')
-        changeDateButton.setIconSize(QSize(26, 26))
-        changeDateButton.setStyleSheet(f'''
-            QPushButton {{
-                background-color: {buttonBgColor};
-                color: {buttonColor};
+        self.changeDateButton = QPushButton(QIcon('img/changeDate_icon.png'), 'Change Date')
+        self.changeDateButton.setIconSize(QSize(26, 26))
+        self.changeDateButtonBaseStyle = '''
+            QPushButton {
                 padding: 10px 20px 10px 20px;
                 border-radius: 8px;
                 font-size: 18px;
                 text-align: left;
-            }}
-            QPushButton:hover {{
-                background-color: {buttonHoverBgColor};
-            }}
-            QPushButton:pressed {{
-                background-color: {buttonClickedBgColor};
-            }}
-            ''')
-        changeDateButton.clicked.connect(lambda: self.handleSelected('chDate'))
+            }
+            '''
+
+        self.changeDateButton.clicked.connect(lambda: self.handleSelected('chDate'))
 
         '''
         changeDescriptionButton allows the user to change the description of the transactions that are selected.
         '''
-        changeDescriptionButton = QPushButton(QIcon('img/changeDescription_icon.png'), 'Change Description')
-        changeDescriptionButton.setIconSize(QSize(26, 26))
-        changeDescriptionButton.setStyleSheet(f'''
-            QPushButton {{
-                background-color: {buttonBgColor};
-                color: {buttonColor};
+        self.changeDescriptionButton = QPushButton(QIcon('img/changeDescription_icon.png'), 'Change Description')
+        self.changeDescriptionButton.setIconSize(QSize(26, 26))
+        self.changeDescriptionButtonBaseStyle = '''
+            QPushButton {
                 padding: 10px 20px 10px 20px;
                 border-radius: 8px;
                 font-size: 18px;
                 text-align: left;
-            }}
-            QPushButton:hover {{
-                background-color: {buttonHoverBgColor};
-            }}
-            QPushButton:pressed {{
-                background-color: {buttonClickedBgColor};
-            }}
-            ''')
-        changeDescriptionButton.clicked.connect(lambda: self.handleSelected('chDesc'))
+            }
+            '''
+
+        self.changeDescriptionButton.clicked.connect(lambda: self.handleSelected('chDesc'))
 
         '''
         textEntry is to enter the new data to replace the current one with the selected transactions.
@@ -275,33 +208,22 @@ class editIncomeWindow(QMainWindow):
         self.textEntry = QLineEdit()
         self.textEntry.setPlaceholderText('Amount: Number | Date: DD-MM-YYYY ')
         self.textEntry.setAlignment(Qt.AlignLeft)
-        self.textEntry.setStyleSheet(f'''
-            QLineEdit {{
+        self.textEntryBaseStyle = '''
+            QLineEdit {
                 font-size: 18px;
                 font-family: Adwaita mono;
-                color: {font_color0};
-                background-color:{entryBgColor};
                 padding-top: 7px;
                 padding-bottom: 7px;
                 border-radius: 5px;
-                border: 2px solid {entryColor}
-            }}
-            
-            QLineEdit:focus {{
-                border: 2px solid {entryBorderColor}
-            }}
-            
-            QLineEdit:hover {{
-                border: 2px solid {entryBorderColor}
-            }}
-            ''')
+            }
+            '''
 
-        buttonCardLayout.addWidget(deleteButton)
-        buttonCardLayout.addWidget(changeAmountButton)
-        buttonCardLayout.addWidget(changeTypeButton)
-        buttonCardLayout.addWidget(changeCategoryButton)
-        buttonCardLayout.addWidget(changeDateButton)
-        buttonCardLayout.addWidget(changeDescriptionButton)
+        buttonCardLayout.addWidget(self.deleteButton)
+        buttonCardLayout.addWidget(self.changeAmountButton)
+        buttonCardLayout.addWidget(self.changeTypeButton)
+        buttonCardLayout.addWidget(self.changeCategoryButton)
+        buttonCardLayout.addWidget(self.changeDateButton)
+        buttonCardLayout.addWidget(self.changeDescriptionButton)
         buttonCardLayout.addWidget(self.textEntry)
 
         topRow.addWidget(buttonCard)
@@ -323,17 +245,14 @@ class editIncomeWindow(QMainWindow):
         menu to sort the transactions in order.
         '''
         self.sortMenu = QComboBox()
-        self.sortMenu.setStyleSheet(f"""
-            QComboBox {{
+        self.sortMenuBaseStyle = """
+            QComboBox {
                 font-size: 18px;
-                color: {font_color0};
                 padding: 8px;
                 border-radius: 5px;
-                border: 2px solid {font_color0};
-                background-color: {sortNormalBgColor};
                 font-family: Adwaita mono;
-            }}
-        """)
+            }
+        """
         self.sortMenu.addItems(
             ['Date DESC',
              'Date ASC',
@@ -350,15 +269,15 @@ class editIncomeWindow(QMainWindow):
         self.sortMenu.currentTextChanged.connect(self.transactionSort)
         self.transactionSort(self.sortMenu.currentText())
 
-        pageLayout.addWidget(backButton)
+        pageLayout.addWidget(self.backButton)
         pageLayout.addWidget(self.headingLabel)
         pageLayout.addLayout(topRow)
         pageLayout.addWidget(self.sortMenu)
         pageLayout.addWidget(scroll, 1)
+        self.refreshTheme()
         pageLayout.addStretch()
 
-        centralWidget.setStyleSheet(f'background-color: {themePrimary}; color: {font_color1};')
-        self.setCentralWidget(centralWidget)
+        self.setCentralWidget(self.mainWidget)
 
     def transactionSort(self, sortedTo):
         '''
@@ -499,3 +418,16 @@ class editIncomeWindow(QMainWindow):
         Function to delete the selected transactions.
         '''
         self.selectedIDs.clear()
+
+    def refreshTheme(self):
+        self.headingLabel.setStyleSheet(self.headingLabelBaseStyle + self.themeManager.get_stylesheet("QLabel"))
+        self.backButton.setStyleSheet(self.backButtonBaseStyle + self.themeManager.get_stylesheet('QPushButton'))
+        self.deleteButton.setStyleSheet(self.deleteButtonBaseStyle + self.themeManager.get_stylesheet('QPushButton'))
+        self.changeAmountButton.setStyleSheet(self.changeAmountButtonBaseStyle + self.themeManager.get_stylesheet('QPushButton'))
+        self.changeTypeButton.setStyleSheet(self.changeTypeButtonBaseStyle + self.themeManager.get_stylesheet('QPushButton'))
+        self.changeCategoryButton.setStyleSheet(self.changeCategoryButtonBaseStyle + self.themeManager.get_stylesheet('QPushButton'))
+        self.changeDateButton.setStyleSheet(self.changeDateButtonBaseStyle + self.themeManager.get_stylesheet('QPushButton'))
+        self.changeDescriptionButton.setStyleSheet(self.changeDescriptionButtonBaseStyle + self.themeManager.get_stylesheet('QPushButton'))
+        self.textEntry.setStyleSheet(self.textEntryBaseStyle + self.themeManager.get_stylesheet('QLineEdit'))
+        self.sortMenu.setStyleSheet(self.sortMenuBaseStyle + self.themeManager.get_stylesheet('QComboBox') + self.themeManager.get_stylesheet('QLabel'))
+        self.mainWidget.setStyleSheet(self.themeManager.get_stylesheet('PrimaryASecondary'))

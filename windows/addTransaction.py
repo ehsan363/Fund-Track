@@ -30,7 +30,7 @@ class addTransactionWindow(QMainWindow):
     '''
     goHome_Signal = Signal()
 
-    def __init__(self):
+    def __init__(self, ThemeManager):
         super().__init__()
         self.setWindowTitle('FundTrack') # Title of the window
 
@@ -49,6 +49,10 @@ class addTransactionWindow(QMainWindow):
         pageLayout = QVBoxLayout()
         pageLayout.setAlignment(Qt.AlignTop)
         pageLayout.setSpacing(35)
+
+        self.mainWidget = QWidget()
+        self.mainWidget.setLayout(pageLayout)
+        self.setCentralWidget(self.mainWidget)
 
         row1 = QHBoxLayout()
         row1.setAlignment(Qt.AlignLeft)
@@ -72,42 +76,20 @@ class addTransactionWindow(QMainWindow):
         with open('data/config.json', 'r') as f:
             data = json.load(f)
             currentTheme = data['CurrentTheme']
-            for i in data['Themes']:
-                themePrimary = i[currentTheme]['Primary']
-                themeSecondary = i[currentTheme]['Secondary']
 
-                buttonConfig = i[currentTheme]['Button']
-                entryConfig = i[currentTheme]['Entry']
-                fontConfig = i[currentTheme]["Font"]
-                sortConfig = i[currentTheme]["Sortmenu"]
-
-                buttonBgColor = buttonConfig['bgcolor']
-                buttonHoverBgColor = buttonConfig['hoverbgcolor']
-                buttonClickedBgColor = buttonConfig['clickbgcolor']
-                buttonColor = buttonConfig['color']
-
-                entryBgColor = entryConfig['bgcolor']
-                entryColor = entryConfig['color']
-                entryBorderColor = entryConfig['bordercolor']
-
-                font_color0 = fontConfig['font-color0']
-                font_color1 = fontConfig['font-color1']
-                font_color2 = fontConfig['font-color2']
-
-                sortNormalBorder = sortConfig["border"]
-                sortNormalBgColor = sortConfig["bgcolor"]
+        self.themeManager = ThemeManager()
+        self.themeManager.themeChanged.connect(self.refreshTheme)
 
         # Heading
         self.headingLabel = QLabel("""Add Transaction
 ──────────────────────────────────────────────────────────────────────────────────────────""")
         self.headingLabel.setAlignment(Qt.AlignLeft)
-        self.headingLabel.setStyleSheet(f"""
+        self.headingLabelBaseStyle = """
             font-size: 36px;
             font-family: DejaVu Sans Mono;
             padding-top: 15px;
             padding-left: 10px;
-            color: {font_color0}
-        """)
+        """
 
 
         '''
@@ -116,36 +98,28 @@ class addTransactionWindow(QMainWindow):
         The backButton allows the user to go back to the Homepage.
         It also has the shortcut key of Ctrl + W, doing either of these will let the user get to the Homepage.
         '''
-        backButton = QPushButton(QIcon('img/back_icon.png'),'Back')
-        backButton.setShortcut(QKeySequence('Ctrl+W'))
-        backButton.setStyleSheet(f'''
-            QPushButton {{
-                background-color: {buttonBgColor};
+        self.backButton = QPushButton(QIcon('img/back_icon.png'),'Back')
+        self.backButton.setShortcut(QKeySequence('Ctrl+W'))
+        self.backButtonBaseStyle = '''
+            QPushButton {
                 padding: 10px 20px 10px 20px;
                 border-radius: 8px;
                 font-size: 16px;
                 text-align: left;
-                color: {buttonColor}
-            }}
-            QPushButton:hover {{
-                background-color: {buttonHoverBgColor};
-            }}
-            QPushButton:pressed {{
-                background-color: {buttonClickedBgColor};
-            }}
-        ''')
-        backButton.clicked.connect(self.goHome_Signal.emit)
+            }
+        '''
+        self.backButton.clicked.connect(self.goHome_Signal.emit)
 
         # Date
         '''
         row1Card is the card to hold all the elements that are at top most row to select for the transaction
         '''
-        row1Card = QFrame()
-        row1Card.setStyleSheet('''
+        self.row1Card = QFrame()
+        self.row1CardBaseStyle = '''
             font-size: 18px;
             padding-left: 15px;
             padding-top: 10px;
-        ''')
+        '''
 
         '''
         dateEntry is an element that allows the user to select the date from a calander or enter it for the transaction
@@ -157,65 +131,29 @@ class addTransactionWindow(QMainWindow):
         self.dateEntry.setFixedWidth(150)
         calendar = self.dateEntry.calendarWidget()
         calendar.setMinimumSize(360, 300)
-        self.dateEntry.setStyleSheet(f"""
-            QDateEdit {{
-                background-color: {entryBgColor};
-                border: 2px solid {entryColor};
-                border-radius: 8px;
-                padding: 6px 10px;
-                font-size: 14px;
-            }}
-            
-            QDateEdit:hover {{
-                border: 2px solid {entryBorderColor};
-            }}
-            
-            QDateEdit:focus {{
-                border: 2px solid {entryBorderColor};
-            }}
-            
-            QDateEdit::drop-down {{
-                subcontrol-origin: padding;
-                subcontrol-position: top right;
-                width: 24px;
-                border-left: 2px solid {entryBorderColor};
-            }}
-            
-            QDateEdit::down-arrow {{
-                image: url(themes/{currentTheme}/down_icon.png);
-                width: 14px;
-                height: 14px;
-            }}
-            
-            QCalendarWidget QToolButton#qt_calendar_prevmonth {{
-                qproperty-icon: url(themes/{currentTheme}/chevron-left.png);
-                qproperty-iconSize: 16px;
-            }}
-            
-            QCalendarWidget QToolButton#qt_calendar_nextmonth {{
-                qproperty-icon: url(themes/{currentTheme}/chevron-right.png);
-                qproperty-iconSize: 16px;
-            }}
-            
-            QCalendarWidget QAbstractItemView {{
-               font-size: 16px;
-            }}
-        """)
 
         '''
         Layout for the row1Card, uses horizontal layout
         '''
-        row1CardLayout = QHBoxLayout(row1Card)
+        row1CardLayout = QHBoxLayout(self.row1Card)
         row1CardLayout.addWidget(self.dateEntry)
 
         # Amount
         '''
         row2Card is the card that holds all the elements that are in the row after date selection. 
         '''
-        row2Card = QFrame()
-        row2Card.setStyleSheet('''
+        self.row2Card = QFrame()
+        self.row2CardBaseStyle = '''
             font-size: 18px;
-            padding-left: 15px;''')
+            padding-left: 15px;
+        '''
+
+        '''
+                Fetching the suffix for the currency from the json file.
+                '''
+        with open('data/config.json') as f:
+            data = json.load(f)
+            currencySuffix = f' {data["CurrencySuffix"]}'
 
         '''
         To allow the user to enter the amount for the transaction
@@ -223,41 +161,14 @@ class addTransactionWindow(QMainWindow):
         self.amountEntry = QDoubleSpinBox()
         self.amountEntry.setDecimals(2)
         self.amountEntry.setMaximum(10_000_000)
-
-        '''
-        Fetching the suffix for the currency from the json file.
-        '''
-        with open('data/config.json') as f:
-            data = json.load(f)
-            currencySuffix = f' {data["CurrencySuffix"]}'
-
-        '''
-        Allows the user to enter the amount for the transaction.
-        '''
         self.amountEntry.setSuffix(currencySuffix)
-        self.amountEntry.setStyleSheet(f'''
-            QDoubleSpinBox {{
-                background-color: {sortNormalBgColor};
-                color: {font_color1};
-                border: 2px solid {entryColor};
+        self.amountEntryBaseStyle = '''
+            QDoubleSpinBox {
                 border-radius: 8px;
                 padding: 6px 10px;
                 font-size: 16px;
-            }}
-            
-            QDoubleSpinBox:hover {{
-                border: 2px solid {entryBorderColor};
-            }}
-            
-            QDoubleSpinBox:focus {{
-                border: 2px solid {entryBorderColor};
-            }}
-            
-            QDoubleSpinBox::up-button,
-            QDoubleSpinBox::down-button {{
-                width: 0px;
-                border: none;
-            }}''')
+            }
+        '''
 
         # Type
         '''
@@ -265,30 +176,19 @@ class addTransactionWindow(QMainWindow):
         '''
         self.typeEntry = QComboBox()
         self.typeEntry.addItems(['Income', 'Expense'])
-        self.typeEntry.setStyleSheet(f"""
-            QComboBox {{
+        self.typeEntryBaseStyle = """
+            QComboBox {
                 font-size: 18px;
                 padding: 8px;
                 border-radius: 5px;
-                border: 2px solid {sortNormalBorder};
-                background-color: {sortNormalBgColor};
-                color: {font_color0};
                 font-family: Adwaita mono;
-            }}
-            
-            QComboBox:hover {{
-                border: 2px solid {entryBorderColor};
-            }}
-            
-            QComboBox:focus {{
-                border: 2px solid {entryBorderColor};
-            }}
-        """)
+            }
+        """
 
         '''
         Layout for the row2Card, uses horizontal layout
         '''
-        row2CardLayout = QHBoxLayout(row2Card)
+        row2CardLayout = QHBoxLayout(self.row2Card)
         row2CardLayout.setSpacing(40)
         row2CardLayout.addWidget(self.amountEntry)
         row2CardLayout.addWidget(self.typeEntry)
@@ -297,35 +197,24 @@ class addTransactionWindow(QMainWindow):
         '''
         row3Card holds the elements that allows the user to enter or select data for the transaction that comes after amount entry and type choosing.
         '''
-        row3Card = QFrame()
-        row3Card.setStyleSheet('''
+        self.row3Card = QFrame()
+        self.row3CardBaseStyle = '''
             font-size: 18px;
             padding-left: 15px;
-        ''')
+        '''
 
         '''
         categoryEntry is to enter the category of the transaction.
         '''
         self.categoryEntry = QComboBox()
-        self.categoryEntry.setStyleSheet(f"""
-            QComboBox {{
+        self.categoryEntryBaseStyle = """
+            QComboBox {
                 font-size: 18px;
                 padding: 8px;
                 border-radius: 5px;
-                border: 2px solid {sortNormalBorder};
-                background-color: {sortNormalBgColor};
-                color: {font_color0};
                 font-family: Adwaita mono;
-            }}
-            
-            QComboBox:hover {{
-                border: 2px solid {entryBorderColor};
-            }}
-            
-            QComboBox:focus {{
-                border: 2px solid {entryBorderColor};
-            }}
-        """)
+            }
+        """
 
         # Account
         '''
@@ -333,27 +222,16 @@ class addTransactionWindow(QMainWindow):
         '''
         self.accountEntry = QComboBox()
         self.accountEntry.addItems(["Cash", "Bank", "Credit Card"])
-        self.accountEntry.setStyleSheet(f"""
-            QComboBox {{
+        self.accountEntryBaseStyle = """
+            QComboBox {
                 font-size: 18px;
                 padding: 8px;
                 border-radius: 5px;
-                border: 2px solid {sortNormalBorder};
-                background-color: {sortNormalBgColor};
-                color: {font_color0};
                 font-family: Adwaita mono;
-            }}
-            
-            QComboBox:hover {{
-                border: 2px solid {entryBorderColor};
-            }}
-            
-            QComboBox:focus {{
-                border: 2px solid {entryBorderColor};
-            }}
-        """)
+            }
+        """
 
-        row3CardLayout = QHBoxLayout(row3Card)
+        row3CardLayout = QHBoxLayout(self.row3Card)
         row3CardLayout.setSpacing(40)
         row3CardLayout.addWidget(self.categoryEntry)
         row3CardLayout.addWidget(self.accountEntry)
@@ -365,35 +243,32 @@ class addTransactionWindow(QMainWindow):
         '''
         row4Card holds all the elements that are in the row after category entry and account entry
         '''
-        row4Card = QFrame()
-        row4Card.setStyleSheet('''
+        self.row4Card = QFrame()
+        self.row4CardBaseStyle = '''
             font-size: 18px;
             padding-left: 10px;
             padding-top: 5px;
             font-family: Adwaita mono;
-        ''')
+        '''
 
         '''
         descriptionLabel is to show the title of the area where the user can type in the description
         '''
         self.descriptionLabel = QLabel('Description')
-        self.descriptionLabel.setStyleSheet(f'''
+        self.descriptionLabelBaseStyle = '''
             font-size: 18px;
-            color: {font_color0}
-        ''')
+        '''
 
         '''
         descriptionEntry is the area where the user enters the description
         '''
         self.descriptionEntry = QTextEdit()
-        self.descriptionEntry.setStyleSheet(f'''
+        self.descriptionEntryBaseStyle = '''
             font-size: 18px;
-            background-color: {themeSecondary};
             border-radius: 10px;
-            border: 2px solid {entryBorderColor};
-        ''')
+        '''
 
-        row4CardLayout = QVBoxLayout(row4Card)
+        row4CardLayout = QVBoxLayout(self.row4Card)
         row4CardLayout.addWidget(self.descriptionLabel)
         row4CardLayout.addWidget(self.descriptionEntry)
 
@@ -404,60 +279,27 @@ class addTransactionWindow(QMainWindow):
         self.submitBtn = QPushButton('Enter')
         self.submitBtn.setShortcut(QKeySequence('Alt+A'))
         self.submitBtn.clicked.connect(self.enterData)
-        self.submitBtn.setStyleSheet(f'''
-            QPushButton {{
-                background-color: {buttonBgColor};
-                color: {buttonColor};
+        self.submitBtnBaseStyle = '''
+            QPushButton {
                 padding: 10px 20px 10px 20px;
                 border-radius: 8px;
                 font-size: 18px;
                 text-align: center;  
-            }}
-            
-            QPushButton:hover {{
-                background-color: {buttonHoverBgColor};
-            }}
-            
-            QPushButton:pressed {{
-                background-color: {buttonClickedBgColor};
-            }}
-        ''')
+            }
+        '''
 
         '''
         resetCh is the chackbox that disables the values getting reset
         '''
         self.resetCh = QCheckBox('Do not reset')
-        self.resetCh.setStyleSheet(f'''
-            QCheckBox {{
-                spacing: 10px;
-                font-size: 14px;
-                color: {font_color0};
-                font-family: Adwaita mono;
-            }}
-            
-            QCheckBox::indicator {{
-                width: 20px;
-                height: 20px;
-            }}
-            
-            QCheckBox::indicator:unchecked {{
-                border: 2px solid {sortNormalBorder};
-                background: {themeSecondary};
-                border-radius: 4px;
-            }}
-            
-            QCheckBox::indicator:checked {{
-                border: 2px solid {entryBorderColor};
-                border-radius: 4px;
-            }}''')
 
-        row1.addWidget(row1Card)
-        row2.addWidget(row2Card)
-        row3.addWidget(row3Card)
-        row4.addWidget(row4Card)
+        row1.addWidget(self.row1Card)
+        row2.addWidget(self.row2Card)
+        row3.addWidget(self.row3Card)
+        row4.addWidget(self.row4Card)
 
 
-        pageLayout.addWidget(backButton)
+        pageLayout.addWidget(self.backButton)
         pageLayout.addWidget(self.headingLabel)
         pageLayout.addLayout(row1)
         pageLayout.addLayout(row2)
@@ -465,13 +307,9 @@ class addTransactionWindow(QMainWindow):
         pageLayout.addLayout(row4)
         pageLayout.addWidget(self.submitBtn)
         pageLayout.addWidget(self.resetCh)
+        self.refreshTheme()
 
         pageLayout.addStretch()
-
-        centralWidget = QWidget()
-        centralWidget.setLayout(pageLayout)
-        centralWidget.setStyleSheet(f'background-color: {themePrimary}; color: {font_color1};')
-        self.setCentralWidget(centralWidget)
 
     def resetForm(self):
         '''
@@ -523,3 +361,21 @@ class addTransactionWindow(QMainWindow):
             self.categoryEntry.addItems(self.categoryDBIncome)
         else:
             self.categoryEntry.addItems(self.categoryDBExpense)
+
+    def refreshTheme(self):
+        self.mainWidget.setStyleSheet(self.themeManager.get_stylesheet('PrimaryASecondary'))
+        self.headingLabel.setStyleSheet(self.headingLabelBaseStyle + self.themeManager.get_stylesheet('QLabel'))
+        self.backButton.setStyleSheet(self.backButtonBaseStyle + self.themeManager.get_stylesheet('QPushButton'))
+        self.row1Card.setStyleSheet(self.row1CardBaseStyle)
+        self.dateEntry.setStyleSheet(self.themeManager.get_stylesheet('QDateEdit'))
+        self.row2Card.setStyleSheet(self.row2CardBaseStyle)
+        self.amountEntry.setStyleSheet(self.amountEntryBaseStyle + self.themeManager.get_stylesheet('QDoubleSpinBox') + self.themeManager.get_stylesheet('font_color1'))
+        self.typeEntry.setStyleSheet(self.typeEntryBaseStyle + self.themeManager.get_stylesheet('QComboBox') + self.themeManager.get_stylesheet('QLabel'))
+        self.categoryEntry.setStyleSheet(self.categoryEntryBaseStyle + self.themeManager.get_stylesheet('QComboBox') + self.themeManager.get_stylesheet('QLabel'))
+        self.accountEntry.setStyleSheet(self.accountEntryBaseStyle + self.themeManager.get_stylesheet('QComboBox') + self.themeManager.get_stylesheet('QLabel'))
+        self.row3Card.setStyleSheet(self.row3CardBaseStyle)
+        self.row4Card.setStyleSheet(self.row4CardBaseStyle)
+        self.descriptionLabel.setStyleSheet(self.descriptionLabelBaseStyle + self.themeManager.get_stylesheet('QLabel'))
+        self.descriptionEntry.setStyleSheet(self.descriptionEntryBaseStyle + self.themeManager.get_stylesheet('QFrame'))
+        self.submitBtn.setStyleSheet(self.submitBtnBaseStyle + self.themeManager.get_stylesheet('QPushButton'))
+        self.resetCh.setStyleSheet(self.themeManager.get_stylesheet('QCheckBox'))

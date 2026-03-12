@@ -27,7 +27,7 @@ class historyWindow(QMainWindow):
     '''
     goHome_Signal = Signal()
 
-    def __init__(self):
+    def __init__(self, ThemeManager):
         super().__init__()
         self.setWindowTitle('FundTrack')
 
@@ -42,74 +42,55 @@ class historyWindow(QMainWindow):
         font.setBold(True)
 
         # Layout
-        centralWidget = QWidget()
-        self.setCentralWidget(centralWidget)
-        pageLayout = QVBoxLayout(centralWidget)
+        pageLayout = QVBoxLayout()
         pageLayout.setAlignment(Qt.AlignTop)
         pageLayout.setSpacing(35)
 
         # UI elements
         '''
+        mainWidget is one in which all the elements that should be in the central widget is added
+        
         headingLabel is the label for the heading text.
         
         backButton is the button on the top part of the window that allows user to return to the HomePage.
         
         scroll is the variable which allows the user to scroll through the page of recent transactions.
         '''
+
+        self.mainWidget = QWidget()
+        self.mainWidget.setLayout(pageLayout)
+        self.setCentralWidget(self.mainWidget)
+
         # Theme
         with open('data/config.json', 'r') as f:
             data = json.load(f)
             currentTheme = data['CurrentTheme']
-            for i in data['Themes']:
-                themePrimary = i[currentTheme]['Primary']
-                themeSecondary = i[currentTheme]['Secondary']
 
-                buttonConfig = i[currentTheme]['Button']
-                sortConfig = i[currentTheme]["Sortmenu"]
-                fontConfig = i[currentTheme]["Font"]
-
-                font_color0 = fontConfig['font-color0']
-                font_color1 = fontConfig['font-color1']
-                font_color2 = fontConfig['font-color2']
-
-                buttonBgColor = buttonConfig['bgcolor']
-                buttonHoverBgColor = buttonConfig['hoverbgcolor']
-                buttonClickedBgColor = buttonConfig['clickbgcolor']
-                buttonColor = buttonConfig['color']
-
-                sortNormalBgColor = sortConfig["bgcolor"]
+            self.themeManager = ThemeManager()
+            self.themeManager.themeChanged.connect(self.refreshTheme)
 
         # Heading
         self.headingLabel = QLabel("""History
 ──────────────────────────────────────────────────────────────────────────────────────────""")
         self.headingLabel.setAlignment(Qt.AlignLeft)
-        self.headingLabel.setStyleSheet(f"""
+        self.headingLabelBaseStyle = """
             font-size: 36px;
             font-family: DejaVu Sans Mono;
             padding-top: 15px;
             padding-left: 10px;
-            color : {font_color0}
-        """)
+        """
 
-        backButton = QPushButton(QIcon('img/back_icon.png'), 'Back')
-        backButton.setShortcut(QKeySequence('Ctrl+W'))
-        backButton.setStyleSheet(f'''
-            QPushButton {{
-                background-color: {buttonBgColor};
-                color: {buttonColor};
+        self.backButton = QPushButton(QIcon('img/back_icon.png'), 'Back')
+        self.backButton.setShortcut(QKeySequence('Ctrl+W'))
+        self.backButtonBaseStyle = '''
+            QPushButton {
                 padding: 10px 20px 10px 20px;
                 border-radius: 8px;
                 font-size: 16px;
                 text-align: left;
-            }}
-            QPushButton:hover {{
-                background-color: {buttonHoverBgColor};
-            }}
-            QPushButton:pressed {{
-                background-color: {buttonClickedBgColor};
-            }}
-        ''')
-        backButton.clicked.connect(self.goHome_Signal.emit)
+            }
+        '''
+        self.backButton.clicked.connect(self.goHome_Signal.emit)
 
         scroll = QScrollArea()
         scroll.setWidgetResizable(True)
@@ -126,17 +107,14 @@ class historyWindow(QMainWindow):
         transactionSort, the function will be called whenever the option inside the menu is changed.
         '''
         self.sortMenu = QComboBox()
-        self.sortMenu.setStyleSheet(f"""
-            QComboBox {{
+        self.sortMenuBaseStyle = """
+            QComboBox {
                 font-size: 18px;
-                color: {font_color0};
                 padding: 8px;
                 border-radius: 5px;
-                border: 2px solid {font_color0};
-                background-color: {sortNormalBgColor};
                 font-family: Adwaita mono;
-            }}
-        """)
+            }
+        """
 
         self.sortMenu.addItems(
             ['Date DESC',
@@ -152,14 +130,12 @@ class historyWindow(QMainWindow):
         self.sortMenu.currentTextChanged.connect(self.transactionSort)
         self.transactionSort(self.sortMenu.currentText())
 
-        pageLayout.addWidget(backButton)
+        pageLayout.addWidget(self.backButton)
         pageLayout.addWidget(self.headingLabel)
         pageLayout.addWidget(self.sortMenu)
         pageLayout.addWidget(scroll, 1)
+        self.refreshTheme()
         pageLayout.addStretch()
-
-        centralWidget.setStyleSheet(f'background-color: {themePrimary}; color: {font_color1};')
-        self.setCentralWidget(centralWidget)
 
     def transactionSort(self, sortedTo):
         '''
@@ -209,3 +185,9 @@ class historyWindow(QMainWindow):
                 color: {font_color1};''')
 
             self.contentLayout.addWidget(label)
+
+    def refreshTheme(self):
+        self.headingLabel.setStyleSheet(self.headingLabelBaseStyle + self.themeManager.get_stylesheet("QLabel"))
+        self.backButton.setStyleSheet(self.backButtonBaseStyle + self.themeManager.get_stylesheet("QPushButton"))
+        self.sortMenu.setStyleSheet(self.sortMenuBaseStyle + self.themeManager.get_stylesheet("QComboBox") + self.themeManager.get_stylesheet('QLabel'))
+        self.mainWidget.setStyleSheet(self.themeManager.get_stylesheet("PrimaryASecondary"))
