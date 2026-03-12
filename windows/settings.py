@@ -330,13 +330,6 @@ class settingsWindow(QMainWindow):
         self.currencyEntry.clear()
 
     def changeTheme(self, newTheme):
-        '''with open('data/config.json', 'r') as f:
-            data = json.load(f)
-            data['CurrentTheme'] = newTheme
-
-        with open('data/config.json', 'w') as f:
-            json.dump(data, f, indent=4)'''
-
         self.themeManager.apply_theme(newTheme)
 
     def refreshTheme(self):
