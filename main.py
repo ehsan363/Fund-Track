@@ -82,7 +82,7 @@ class AppController:
             3. Show the subwindow
             4, hide the Homepage (main window)
         '''
-        self.sub_window = editExpenseWindow()
+        self.sub_window = editExpenseWindow(ThemeManager)
         self.sub_window.goHome_Signal.connect(self.go_home)
         self.sub_window.show()
         self.window.hide()
